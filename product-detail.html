@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #020000;
+        transition: all 0.3s ease;
+      }
+
+      /* RTL support for Arabic */
+      [lang="ar"] {
+        direction: rtl;
+        text-align: right;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .product-title {
+        font-size: 24px;
+        margin: 0 0 5px 0;
+        color: #0636f4;
+      }
+      .product-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .video-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .video-container video {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-price {
+        font-size: 20px;
+        color: #e91e63;
+        font-weight: bold;
+        margin: 5px 0 15px;
+      }
+
+      .product-description {
+        line-height: 1.6;
+        color: #555;
+      }
+
+      .product-details {
+        display: flex;
+        gap: 20px;
+        margin: 15px 0;
+        color: #666;
+      }
+
+      .buy-button {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .buy-button:hover {
+        background-color: #45a049;
+      }
+
+      /* WhatsApp Order Form Styles */
+      .whatsapp-form {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .form-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+        position: relative;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      .form-group textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      .submit-btn {
+        background-color: #25d366;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .submit-btn:hover {
+        background-color: #128c7e;
+      }
+
+      .close-btn {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 24px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #666;
+      }
+
+      @media (min-width: 768px) {
+        .product-container {
+          flex-direction: row;
+        }
+
+        .video-container {
+          flex: 1;
+        }
+
+        .product-info {
+          flex: 1;
+          padding: 0 20px;
+        }
+      }
+
+      /* Mobile-specific styles */
+      @media (max-width: 767px) {
+        body {
+          padding: 10px;
+        }
+
+        .product-container {
+          gap: 15px;
+        }
+
+        .product-title {
+          font-size: 1.3rem;
+          line-height: 1.3;
+        }
+
+        .product-price {
+          font-size: 1.1rem;
+          margin: 8px 0;
+        }
+
+        .product-description,
+        .product-details {
+          font-size: 0.9rem;
+          line-height: 1.5;
+        }
+
+        .product-meta {
+          flex-direction: column;
+          gap: 5px;
+          font-size: 0.9rem;
+        }
+
+        .buy-button {
+          padding: 10px 20px;
+          font-size: 0.95rem;
+          width: 100%;
+          margin: 15px 0;
+        }
+
+        /* RTL adjustments for mobile */
+        [lang="ar"] .product-details,
+        [lang="ar"] .product-description {
+          text-align: right;
+        }
+
+        [lang="ar"] .product-meta {
+          text-align: right;
+        }
+      }
+    </style>
+  </head>
+  <body lang="en" id="pageBody">
+    <div class="product-container">
+      <div class="video-container">
+        <video id="productVideo" controls autoplay preload="auto" playsinline>
+          <source src="" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div class="product-info">
+        <h1 class="product-title" id="productTitle">Loading...</h1>
+        <div class="product-price" id="productPrice">$99.99</div>
+
+        <p class="product-description" id="productDescription">
+          Loading product description...
+        </p>
+
+        <button type="button" class="buy-button" id="buyButton">Buy Now</button>
+
+        <div class="product-details">
+          <h3>Product Details</h3>
+          <ul id="productDetails">
+            <!-- Will be populated by JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function to detect Arabic text
+      function isArabic(text) {
+        // Regular expression to match Arabic characters
+        const arabicRegex =
+          /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+        return arabicRegex.test(text);
+      }
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        try {
+          // Get the product ID from the URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const productId = parseInt(urlParams.get("id") || "1");
+
+          // Fetch products from the external JSON file
+          const response = await fetch("products.json");
+          if (!response.ok) {
+            throw new Error("Failed to load product data");
+          }
+          const data = await response.json();
+
+          // Find the product with the matching ID
+          const product = data.products.find((p) => p.id === productId) || {
+            title: "Product Not Found",
+            price: 0,
+            description: "The requested product could not be found.",
+            video: "grok-video-979d812e-8b18-40b5-b8c7-c4c0d4b043b7.mp4",
+            stats: {},
+            details: [],
+          };
+
+          // Update the page with product data
+          document.getElementById("productTitle").textContent = product.title;
+          document.getElementById(
+            "productPrice"
+          ).textContent = `$${product.price.toFixed(2)}`;
+          document.getElementById("productDescription").textContent =
+            product.description;
+
+          // Set RTL if product is in Arabic
+          if (isArabic(product.title) || isArabic(product.description)) {
+            document.getElementById("pageBody").setAttribute("lang", "ar");
+          }
+
+          // Update the video source
+          const videoElement = document.getElementById("productVideo");
+          videoElement.src = product.video;
+
+          // Update the page title
+          document.title = `${product.title} - Product Details`;
+
+          // Update the meta description for better SEO
+          const metaDescription = document.querySelector(
+            'meta[name="description"]'
+          );
+          if (metaDescription) {
+            metaDescription.content = product.description;
+          }
+
+          // Update the product meta information
+          const productMeta = document.querySelector(".product-meta");
+          if (productMeta && product.stats) {
+            productMeta.innerHTML = `
+                        <div>⭐ ${product.stats.rating || "4.5"} (${
+              product.stats.reviews || "0"
+            } reviews)</div>
+                        <div>🛒 In Stock: ${product.stats.inStock || "0"}+</div>
+                    `;
+          }
+
+          // Add product details to the list
+          const detailsList = document.getElementById("productDetails");
+          if (detailsList) {
+            detailsList.innerHTML = product.details
+              .map((detail) => `<li>${detail}</li>`)
+              .join("");
+          }
+        } catch (error) {
+          console.error("Error loading product:", error);
+          const productInfo = document.querySelector(".product-info");
+          if (productInfo) {
+            productInfo.innerHTML = `
+                        <h1 class="product-title">Error Loading Product</h1>
+                        <p>Sorry, there was an error loading the product details. Please try again later.</p>
+                        <a href="ht.html" class="back-button">← Back to Products</a>
+                    `;
+          }
+        }
+      });
+    </script>
+
+    <!-- WhatsApp Order Form -->
+    <div id="whatsappForm" class="whatsapp-form">
+      <div class="form-container">
+        <button class="close-btn" onclick="closeOrderForm()">&times;</button>
+        <h2>Order Details</h2>
+        <form id="orderForm" onsubmit="sendOrder(event)">
+          <input type="hidden" id="productName" />
+          <input type="hidden" id="productPrice" />
+
+          <div class="form-group">
+            <label for="name">Your Name *</label>
+            <input type="text" id="name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" required />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Delivery Address *</label>
+            <textarea id="address" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="quantity">Quantity *</label>
+            <input type="number" id="quantity" min="1" value="1" required />
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Additional Notes</label>
+            <textarea id="notes"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <i class="fab fa-whatsapp"></i> Send Order via WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Font Awesome for WhatsApp icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+
+    <script>
+      // Error handling for uncaught errors
+      window.addEventListener("error", function (error) {
+        console.error("Uncaught error:", error);
+        // Optionally show a user-friendly error message
+        const errorDiv = document.createElement("div");
+        errorDiv.style.background = "#ffebee";
+        errorDiv.style.color = "#c62828";
+        errorDiv.style.padding = "10px";
+        errorDiv.style.margin = "10px 0";
+        errorDiv.style.borderRadius = "4px";
+        errorDiv.textContent = "An error occurred. Please try again.";
+        document.body.prepend(errorDiv);
+      });
+
+      // Initialize when DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize buy button
+        const buyButton = document.getElementById("buyButton");
+        if (buyButton) {
+          buyButton.addEventListener("click", openOrderForm);
+        }
+
+        // Initialize close button
+        const closeBtn = document.querySelector(".close-btn");
+        if (closeBtn) {
+          closeBtn.addEventListener("click", closeOrderForm);
+        }
+
+        // Initialize form submission
+        const orderForm = document.getElementById("orderForm");
+        if (orderForm) {
+          orderForm.addEventListener("submit", sendOrder);
+        }
+      });
+
+      // Function to open the order form
+      function openOrderForm(event) {
+        try {
+          if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          const productTitle =
+            document.getElementById("productTitle").textContent;
+          const productPrice =
+            document.getElementById("productPrice").textContent;
+
+          document.getElementById("productName").value = productTitle;
+          document.getElementById("productPrice").value = productPrice;
+
+          // Show the form
+          const form = document.getElementById("whatsappForm");
+          if (form) {
+            form.style.display = "flex";
+            document.body.style.overflow = "hidden"; // Prevent scrolling when form is open
+
+            // Set focus to first input field
+            const firstInput = form.querySelector("input, textarea, select");
+            if (firstInput) firstInput.focus();
+
+            // Scroll to form
+            setTimeout(() => {
+              form.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 50);
+          }
+        } catch (error) {
+          console.error("Error opening order form:", error);
+        }
+      }
+
+      // Function to close the order form
+      function closeOrderForm() {
+        try {
+          const whatsappForm = document.getElementById("whatsappForm");
+          if (whatsappForm) {
+            whatsappForm.style.display = "none";
+            document.body.style.overflow = "auto";
+          }
+        } catch (error) {
+          console.error("Error closing order form:", error);
+        }
+      }
+
+      // Function to send order via WhatsApp
+      function sendOrder(event) {
+        if (event) {
+          event.preventDefault();
+        }
+
+        try {
+          // Get form values
+          const formData = {
+            productName: document.getElementById("productName").value,
+            productPrice: document.getElementById("productPrice").value,
+            name: document.getElementById("name").value,
+            phone: document.getElementById("phone").value,
+            address: document.getElementById("address").value,
+            quantity: document.getElementById("quantity").value,
+            notes: document.getElementById("notes").value,
+          };
+
+          // Validate required fields
+          if (
+            !formData.name ||
+            !formData.phone ||
+            !formData.address ||
+            !formData.quantity
+          ) {
+            console.error("Please fill in all required fields");
+            return false;
+          }
+
+          // Format the message
+          let message = `*New Order*%0A%0A`;
+          message += `*Product:* ${formData.productName}%0A`;
+          message += `*Price:* ${formData.productPrice}%0A`;
+          message += `*Quantity:* ${formData.quantity}%0A`;
+          message += `*Name:* ${formData.name}%0A`;
+          message += `*Phone:* ${formData.phone}%0A`;
+          message += `*Address:* ${formData.address}%0A`;
+
+          if (formData.notes) {
+            message += `*Notes:* ${formData.notes}%0A`;
+          }
+
+          // Create WhatsApp URL
+          const whatsappNumber = "2001551839053";
+          const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+          // Open WhatsApp in a new tab
+          const link = document.createElement("a");
+          link.href = whatsappUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          document.body.appendChild(link);
+          link.click();
+
+          // Clean up
+          setTimeout(() => {
+            document.body.removeChild(link);
+          }, 100);
+
+          // Reset and close form
+          if (event && event.target) {
+            event.target.reset();
+          }
+          closeOrderForm();
+
+          return true;
+        } catch (error) {
+          console.error("Error sending order:", error);
+          return false;
+        }
+      }
+
+      // Close modal when clicking outside of it
+      document.addEventListener("click", function (event) {
+        const modal = document.getElementById("whatsappForm");
+        if (event.target === modal) {
+          closeOrderForm();
+        }
+      });
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeOrderForm();
+        }
+      });
+    </script>
+  </body>
+</html>
