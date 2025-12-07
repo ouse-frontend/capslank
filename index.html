@@ -710,9 +710,13 @@
             // Initialize video element
             const video = videoItem.querySelector('video');
             if (video) {
+              video.poster = "instagram.jpeg";
               video.muted = true;
               video.volume = 0;
               video.pause();
+              video.preload = "metadata";
+              video.playsInline = true;
+
             }
           });
 
