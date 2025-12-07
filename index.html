@@ -384,24 +384,6 @@
       }
 
       @media (min-width: 320px) and (max-width: 470px) {
-        /* Samsung browser specific fixes */
-        @supports (-webkit-touch-callout: none) {
-          video {
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-perspective: 1000;
-            perspective: 1000;
-          }
-          
-          .video-wrapper video {
-            width: 100% !important;
-            height: auto !important;
-            max-height: 100%;
-          }
-        }
-        
         /* Header adjustments */
         .header {
           padding: 5px 0;
@@ -712,7 +694,7 @@
             videoItem.innerHTML = `
               <a href="product-detail.html?id=${product.id}" class="video-link">
                 <div class="video-wrapper">
-                  <video loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5" x5-video-player-fullscreen="true" preload="metadata" data-src="${product.video}">
+                  <video loop muted playsinline preload="none" data-src="${product.video}">
                     <source src="" type="video/mp4">
                     Your browser does not support the video tag.
                   </video>
@@ -728,12 +710,12 @@
             // Initialize video element
             const video = videoItem.querySelector('video');
             if (video) {
-              video.poster = "instagram.jpeg";
+              
               video.muted = true;
               video.volume = 0;
               video.pause();
               video.preload = "metadata";
-              video.playsInline = true;
+              
 
             }
           });
