@@ -228,11 +228,13 @@
         position: relative;
         width: 100%;
         aspect-ratio: 16/9;
-        background-color: #333;
+        background: #1a1a1a;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+        opacity: 0;
+        transform: translateY(20px);
       }
 
       .video-item:hover {
@@ -552,127 +554,53 @@
     </div>
 
     <script>
-      // Banner slideshow functionality
-      document.addEventListener('DOMContentLoaded', function() {
+      // Main content script - runs when DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Banner slideshow functionality
         const banner = document.getElementById('banner');
         const slideshow = document.getElementById('bannerSlideshow');
         const closeButton = document.getElementById('closeBanner');
         let currentSlide = 0;
         
-        // Close banner
-        if (closeButton) {
-          closeButton.addEventListener('click', function() {
-            banner.style.display = 'none';
-          });
-        }
-        
-        // Auto-advance slides
-        function nextSlide() {
+        // Initialize banner slideshow if it exists
+        if (slideshow) {
+          // Close banner
+          if (closeButton) {
+            closeButton.addEventListener('click', function() {
+              banner.style.display = 'none';
+            });
+          }
+          
+          // Auto-advance slides
+          function nextSlide() {
+            const slides = document.querySelectorAll('.banner-slide');
+            if (slides.length > 0) {
+              currentSlide = (currentSlide + 1) % slides.length;
+              slideshow.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+          }
+          
+          // Change slide every 5 seconds if we have slides
           const slides = document.querySelectorAll('.banner-slide');
-          currentSlide = (currentSlide + 1) % slides.length;
-          slideshow.style.transform = `translateX(-${currentSlide * 100}%)`;
+          if (slides.length > 0) {
+            setInterval(nextSlide, 5000);
+          }
         }
-        
-        // Change slide every 5 seconds
-        setInterval(nextSlide, 5000);
-      });
 
-      // Main content script
-      document.addEventListener("DOMContentLoaded", async function () {
-  const gridContainer = document.querySelector(".grid-container");
-
-  try {
-    // Fetch products from the external JSON file
-    const response = await fetch("products.json");
-    if (!response.ok) {
-      throw new Error("Failed to load products");
-    }
-    const data = await response.json();
-    const products = data.products;
-
-    // Create video items for each product
-    products.forEach((product) => {
-      const videoItem = document.createElement("div");
-      videoItem.className = "video-item";
-
-      const views =
-        product.stats.views >= 1000
-          ? `${(product.stats.views / 1000).toFixed(1)}K`
-          : product.stats.views;
-
-      videoItem.innerHTML = `
-                            <a href="product-detail.html?id=${
-                              product.id
-                            }" class="video-link">
-                                <div class="video-wrapper">
-                                    <video loop muted preload="metadata" playsinline>
-                                        <source src="${
-                                          product.video
-                                        }" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <div class="video-overlay">
-                                        <h3>${product.title}</h3>
-                                        <p>${product.price.toFixed(2)}جنية</p>
-
-                                        <!-- <div class="video-stats">
-                                             <span>👁️ ${views}</span>
-                                             <span>👍 ${
-                                               product.stats.likes
-                                             }%</span>
-                                             <span>💬 ${
-                                               product.stats.comments
-                                             }</span> 
-                                        </div> -->
-
-
-
-
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-      gridContainer.appendChild(videoItem);
-    });
-
-    // Handle hover play/pause for videos
-    const videoItems = document.querySelectorAll(".video-item");
-
-    videoItems.forEach((item) => {
-      const video = item.querySelector("video");
-
-      // Mute and set volume to 0 to ensure no sound plays
-      video.muted = true;
-      video.volume = 0;
-      
-
-      // Pause video initially
-      video.pause();
-
-      // Play on hover
-      item.addEventListener("mouseenter", () => {
-        video.play().catch((e) => console.log("Video play failed:", e));
-      });
-
-      // Pause when not hovering
-      item.addEventListener("mouseleave", () => {
-        video.pause();
-        video.currentTime = 0; // Reset to start
-      });
-    });
-  } catch (error) {
-    console.error("Error loading products:", error);
-    gridContainer.innerHTML =
-      "<p>Error loading products. Please try again later.</p>";
-  }
-});
-
-      // Toggle search functionality
-      document.addEventListener("DOMContentLoaded", function () {
+        // Main grid and search functionality
+        const gridContainer = document.querySelector(".grid-container");
         const searchContainer = document.querySelector(".search-container");
         const searchInput = document.querySelector(".search-input");
         const searchButton = document.querySelector(".search-button");
-        let products = []; // Will store the products for searching
+        
+        if (!gridContainer || !searchContainer || !searchInput || !searchButton) {
+          console.error("Required elements not found in the DOM");
+          return;
+        }
+        
+        let productsData = []; // Store products for search functionality
+        let currentPlayingVideo = null; // Track currently playing video for mobile
+        let currentHoveredVideo = null; // Track hovered video for desktop
 
         // Toggle search on mobile
         searchButton.addEventListener("click", function (e) {
@@ -682,6 +610,9 @@
             if (searchContainer.classList.contains("active")) {
               searchInput.focus();
             }
+          } else {
+            // On desktop, perform search on button click
+            performSearch();
           }
         });
 
@@ -698,13 +629,13 @@
 
         // Close search on escape key
         document.addEventListener("keydown", function (e) {
-          if (
-            e.key === "Escape" &&
-            searchContainer.classList.contains("active")
-          ) {
+          if (e.key === "Escape" && searchContainer.classList.contains("active")) {
             searchContainer.classList.remove("active");
           }
         });
+
+        // Search functionality
+        searchInput.addEventListener("input", performSearch);
 
         // Function to perform search
         function performSearch() {
@@ -720,14 +651,14 @@
           }
 
           // Search through products
-          const filteredProducts = products.filter((product) => {
+          const filteredProducts = productsData.filter((product) => {
             const title = product.title?.toLowerCase() || "";
             const price = product.price?.toString() || "";
             return (
               title.includes(searchTerm) ||
               price.includes(searchTerm) ||
-              title.includes(searchTerm.replace(/\s+/g, " "))
-            ); // Handle multiple spaces
+              title.includes(searchTerm.replace(/\s+/g, " ").trim())
+            );
           });
 
           // Hide all items first
@@ -737,103 +668,198 @@
 
           // Show only matching items
           filteredProducts.forEach((product) => {
-            const item = document.querySelector(
-              `.video-item a[href="product-detail.html?id=${product.id}"]`
-            )?.parentElement;
+            const item = document.querySelector(`.video-item a[href="product-detail.html?id=${product.id}"]`)?.parentElement;
             if (item) {
               item.style.display = "block";
             }
           });
         }
 
-        // Get products when the page loads
-        async function loadProducts() {
-          try {
-            const response = await fetch("products.json");
-            if (!response.ok) {
-              throw new Error("Failed to load products");
-            }
-            const data = await response.json();
-            products = data.products || [];
+        // Load products and initialize the page
+        try {
+          // Fetch products from the external JSON file
+          const response = await fetch("products.json");
+          if (!response.ok) {
+            throw new Error("Failed to load products");
+          }
+          const data = await response.json();
+          productsData = data.products || [];
 
-            // Initialize automatic search
-            searchInput.addEventListener("input", performSearch);
-            // Keep the button click for better UX
-            searchButton.addEventListener("click", performSearch);
-          } catch (error) {
-            console.error("Error loading products:", error);
+          // Create video items for each product
+          productsData.forEach((product, index) => {
+            const videoItem = document.createElement("div");
+            videoItem.className = "video-item";
+            videoItem.style.transitionDelay = `${index * 0.05}s`;
+
+            videoItem.innerHTML = `
+              <a href="product-detail.html?id=${product.id}" class="video-link">
+                <div class="video-wrapper">
+                  <video loop muted playsinline preload="none" data-src="${product.video}">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                  <div class="video-overlay">
+                    <h3>${product.title}</h3>
+                    <p>${product.price.toFixed(2)}جنية</p>
+                  </div>
+                </div>
+              </a>
+            `;
+            gridContainer.appendChild(videoItem);
+
+            // Initialize video element
+            const video = videoItem.querySelector('video');
+            if (video) {
+              video.muted = true;
+              video.volume = 0;
+              video.pause();
+            }
+          });
+
+          // Initialize Intersection Observer for lazy loading and animations
+          const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const videoItem = entry.target;
+                // Fade in animation
+                videoItem.style.opacity = '1';
+                videoItem.style.transform = 'translateY(0)';
+                
+                // Lazy load video
+                const video = videoItem.querySelector('video');
+                if (video && !video.getAttribute('data-loaded')) {
+                  const src = video.getAttribute('data-src');
+                  if (src) {
+                    video.querySelector('source').src = src;
+                    video.load();
+                    video.setAttribute('data-loaded', 'true');
+                  }
+                }
+                
+                observer.unobserve(videoItem);
+              }
+            });
+          }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px 100px 0px'
+          });
+
+          // Observe all video items
+          document.querySelectorAll('.video-item').forEach(item => {
+            observer.observe(item);
+            
+            // Set up hover events for desktop
+            if (window.innerWidth > 768) {
+              const video = item.querySelector('video');
+              if (video) {
+                item.addEventListener('mouseenter', () => handleVideoHover(video));
+                item.addEventListener('mouseleave', () => handleVideoLeave(video));
+              }
+            }
+          });
+
+          // Initialize video playback for mobile
+          if (window.innerWidth <= 768) {
+            window.addEventListener('scroll', throttle(handleVideoPlayback, 200));
+            window.addEventListener('resize', throttle(handleVideoPlayback, 200));
+            handleVideoPlayback();
+          }
+
+        } catch (error) {
+          console.error("Error loading products:", error);
+          if (gridContainer) {
+            gridContainer.innerHTML = "<p>Error loading products. Please try again later.</p>";
           }
         }
 
-        // Load products and initialize search
-        loadProducts();
+        // Function to handle video hover (desktop)
+        function handleVideoHover(video) {
+          if (currentHoveredVideo && currentHoveredVideo !== video) {
+            currentHoveredVideo.pause();
+            currentHoveredVideo.currentTime = 0;
+          }
+          video.play().catch(e => console.log("Video play failed:", e));
+          currentHoveredVideo = video;
+        }
 
-        // Video autoplay on scroll for mobile - one at a time
-        let currentPlayingVideo = null;
-        
+        // Function to handle video leave (desktop)
+        function handleVideoLeave(video) {
+          if (video !== document.querySelector('.video-item video[data-playing]')) {
+            video.pause();
+            video.currentTime = 0;
+          }
+        }
+
+        // Function to check if element is in viewport
         function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            // Consider a video in viewport if it's at least 50% visible
-            return (
-                rect.top >= -rect.height * 0.5 &&
-                rect.bottom <= viewportHeight + rect.height * 0.5
-            );
+          const rect = element.getBoundingClientRect();
+          const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+          return (
+            rect.top >= -rect.height * 0.5 &&
+            rect.bottom <= viewportHeight + rect.height * 0.5
+          );
         }
 
+        // Function to handle video playback (mobile)
         function handleVideoPlayback() {
-            if (window.innerWidth < 320 || window.innerWidth > 470) return;
-            
-            const videos = Array.from(document.querySelectorAll('.video-item video'));
-            const visibleVideos = videos.filter(video => isInViewport(video));
-            
-            // If no videos are visible, pause the current one
-            if (visibleVideos.length === 0) {
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
-                    currentPlayingVideo = null;
-                }
-                return;
+          // Only handle mobile devices (320px - 768px)
+          if (window.innerWidth > 768) return;
+          
+          const videos = Array.from(document.querySelectorAll('.video-item video[data-loaded]'));
+          const visibleVideos = videos.filter(video => isInViewport(video));
+          
+          // If no videos are visible, pause the current one
+          if (visibleVideos.length === 0) {
+            if (currentPlayingVideo) {
+              currentPlayingVideo.pause();
+              currentPlayingVideo.removeAttribute('data-playing');
+              currentPlayingVideo = null;
+            }
+            return;
+          }
+          
+          // Find the most centered video
+          const viewportCenter = window.innerHeight / 2;
+          const { video: closestVideo } = visibleVideos.reduce((closest, video) => {
+            const rect = video.getBoundingClientRect();
+            const videoCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(viewportCenter - videoCenter);
+            return distance < closest.distance ? { video, distance } : closest;
+          }, { video: null, distance: Infinity });
+          
+          // If we have a new video to play and it's not the current one
+          if (closestVideo && currentPlayingVideo !== closestVideo) {
+            // Pause current video if it exists
+            if (currentPlayingVideo) {
+              currentPlayingVideo.pause();
+              currentPlayingVideo.currentTime = 0;
+              currentPlayingVideo.removeAttribute('data-playing');
             }
             
-            // Find the most centered video
-            const viewportCenter = window.innerHeight / 2;
-            const closestVideo = visibleVideos.reduce((closest, video) => {
-                const rect = video.getBoundingClientRect();
-                const videoCenter = rect.top + rect.height / 2;
-                const distance = Math.abs(viewportCenter - videoCenter);
-                return distance < closest.distance ? {video, distance} : closest;
-            }, {video: null, distance: Infinity}).video;
-            
-            // If we have a new video to play
-            if (closestVideo && currentPlayingVideo !== closestVideo) {
-                // Pause current video if it exists
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
-                }
-                // Play the new video
-                closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
-                currentPlayingVideo = closestVideo;
+            // Play the new video if it's loaded
+            if (closestVideo.readyState >= 2) {
+              closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
+              closestVideo.setAttribute('data-playing', 'true');
+              currentPlayingVideo = closestVideo;
             }
+          }
         }
 
-        // Throttle scroll events for better performance
-        let isScrolling = false;
-        function throttleScroll() {
-            if (!isScrolling) {
-                window.requestAnimationFrame(() => {
-                    handleVideoPlayback();
-                    isScrolling = false;
-                });
-                isScrolling = true;
+        // Throttle function for scroll/resize events
+        function throttle(callback, limit) {
+          let waiting = false;
+          return function() {
+            if (!waiting) {
+              callback.apply(this, arguments);
+              waiting = true;
+              setTimeout(() => {
+                waiting = false;
+              }, limit);
             }
+          };
         }
 
-        // Add event listeners
-        window.addEventListener('scroll', throttleScroll);
-        window.addEventListener('resize', throttleScroll);
-        document.addEventListener('DOMContentLoaded', handleVideoPlayback);
-      });
+      }); // End of DOMContentLoaded
     </script>
   </body>
 </html>
