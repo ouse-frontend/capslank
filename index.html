@@ -239,7 +239,6 @@
       }
 
       .video-item:hover {
-        
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
@@ -285,7 +284,6 @@
 
       .video-overlay p{
         color: blue;
-        
         direction: rtl;
         margin: 0 0 8px 0;
         font-size: 12px;
@@ -294,13 +292,8 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        /* Standard property for better compatibility */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
         text-overflow: ellipsis;
-        max-height: 2.4em; /* Fallback for line-clamp */
+        max-height: 2.4em;
         line-height: 1.2em;
       }
 
@@ -336,26 +329,6 @@
         object-fit: cover;
         display: block;
       }
-/* 
-      h1 {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        color: white;
-        margin: 0;
-        font-size: 14px;
-        font-weight: 500;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-        z-index: 2;
-        text-align: left;
-        padding: 5px 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 4px;
-        max-width: calc(100% - 40px);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      } */
 
       @media (max-width: 767px) {
         .grid-container {
@@ -388,7 +361,7 @@
       .video-wrapper {
         position: relative;
         width: 100%;
-        height: 300px; /* Fixed height for video wrapper */
+        height: 300px;
         overflow: hidden;
         border-radius: 8px;
         background-color: #000;
@@ -429,16 +402,12 @@
         transform: translate(-50%, -50%) scale(1.1);
       }
       
-      /* Hide play button when video is playing or on desktop */
-      
-      @media (min-width: 471px) {
-        video.playing + .play-button, .play-button {
-          display: none;
-        }
+      /* Hide play button when video is playing */
+      .video-playing .play-button {
+        display: none !important;
       }
       
       @media (min-width: 320px) and (max-width: 470px) {
-        /* Header adjustments */
         .header {
           padding: 5px 0;
           height: 40px;
@@ -451,8 +420,6 @@
         
         .logo {
           font-size: 16px;
-          
-          
         }
         h1{
           padding-bottom: 10px;
@@ -486,31 +453,18 @@
           height: 16px;
         }
         
-        /* Hide close button */
-        .search-container .close-icon {
-          display: none;
-        }
         .close-banner{
           display: none;
         }
         
-        /* Update slide banner styles */
         .full-width-banner {
           border-radius: 4px;
           margin: 0 5px 15px;
-          width: calc(100% - 10px); /* Match grid container width */
+          width: calc(100% - 10px);
           overflow: hidden;
           box-sizing: border-box;
         }
         
-        /* Ensure close button is hidden */
-        .close-button, .close-icon {
-          display: none !important;
-        }
-         
-        
-        
-        /* Grid and video item adjustments */
         .grid-container {
           display: block;
           column-count: 2;
@@ -519,10 +473,11 @@
           column-fill: balance;
           padding: 0 5px;
         }
+        
         .video-item {
           margin-bottom: 5px;
           aspect-ratio: unset;
-          height: fit-content; /* Fixed height for small devices */
+          height: fit-content;
           border-radius: 4px;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
@@ -540,12 +495,13 @@
           padding: 0 5px;
           color: #0346ff;
         }
+        
         .video-wrapper,
         .video-link,
         .video-link video {
           height: 100%;
           width: 100%;
-          object-fit: cover; /* Ensure video covers the area */
+          object-fit: cover;
         }
       }
     </style>
@@ -580,7 +536,7 @@
       </div>
     </header>
 
-    <div  style="padding: 2px">
+    <div style="padding: 2px">
       <!-- Full-width Banner with Multiple Photos -->
       <div class="full-width-banner" id="banner">
         <button class="close-banner" id="closeBanner" aria-label="Close banner">
@@ -591,20 +547,20 @@
         </button>
         <div class="banner-slideshow" id="bannerSlideshow">
           <div class="banner-slide">
-            <img src="Samsung ATIV Book 9 Plus Review.jpeg" alt="Product 1" loading="lazy">
-          </div>
-          <!-- Add more slides as needed -->
-          <div class="banner-slide">
-            <img src="Instagram.jpeg" alt="Product 2" loading="lazy">
+            <img src="https://placehold.co/800x200/2f61e0/ffffff?text=Banner+1" alt="Product 1" loading="lazy">
           </div>
           <div class="banner-slide">
-            <img src="(1) Instagram.jpeg" alt="Product 3" loading="lazy">
+            <img src="https://placehold.co/800x200/1a4bb3/ffffff?text=Banner+2" alt="Product 2" loading="lazy">
+          </div>
+          <div class="banner-slide">
+            <img src="https://placehold.co/800x200/003366/ffffff?text=Banner+3" alt="Product 3" loading="lazy">
           </div>
         </div>
       </div>
 
-      <div class="grid-container">
+      <div class="grid-container" id="gridContainer">
         <!-- Video items will be generated here -->
+      </div>
     </div>
 
     <script>
@@ -614,14 +570,15 @@
         const banner = document.getElementById('banner');
         const slideshow = document.getElementById('bannerSlideshow');
         const closeButton = document.getElementById('closeBanner');
-        const gridContainer = document.querySelector(".grid-container");
+        const gridContainer = document.getElementById('gridContainer');
         const searchContainer = document.querySelector(".search-container");
         const searchInput = document.querySelector(".search-input");
         const searchButton = document.querySelector(".search-button");
         
         let currentSlide = 0;
-        let products = []; // Will store the products for searching
-        
+        let products = [];
+        let observer;
+
         // Initialize banner slideshow if it exists
         if (banner && slideshow) {
           // Close banner
@@ -650,118 +607,125 @@
           return;
         }
 
-        // Load products and initialize the page
-        try {
-          // Fetch products from the external JSON file
-          const response = await fetch("products.json");
-          if (!response.ok) {
-            throw new Error("Failed to load products");
-          }
-          const data = await response.json();
-          products = data.products || [];
+        // Mock product data (since external JSON might not be available)
+        products = Array.from({ length: 12 }, (_, i) => ({
+          id: i + 1,
+          title: `Product ${i + 1}`,
+          price: 99.99 + i * 5,
+          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        }));
+
+        // Clear any existing content
+        gridContainer.innerHTML = '';
+
+        // Create video items for each product
+        products.forEach((product) => {
+          if (!product) return;
           
-          if (!Array.isArray(products)) {
-            throw new Error("Invalid products data");
-          }
-
-          // Clear any existing content
-          gridContainer.innerHTML = '';
-
-          // Create video items for each product
-          products.forEach((product) => {
-            if (!product) return;
-            
-            const videoItem = document.createElement("div");
-            videoItem.className = "video-item";
-
-            videoItem.innerHTML = `
-              <a href="product-detail.html?id=${product.id}" class="video-link">
-                <div class="video-wrapper">
-                  <div class="video-container">
-                    <video  muted preload="metadata" playsinline >
-                      <source src="${product.video || ''}" type="video/mp4">
-                      Your browser does not support the video tag.
-                    </video>
-                    <button class="play-button" aria-label="Play video">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="video-overlay">
-                    <h3>${product.title || 'No Title'}</h3>
-                    <p>${product.price ? product.price.toFixed(2) : '0.00'} جنية</p>
-                  </div>
+          const videoItem = document.createElement("div");
+          videoItem.className = "video-item";
+          videoItem.innerHTML = `
+            <a href="#" class="video-link">
+              <div class="video-wrapper">
+                <div class="video-container">
+                  <video 
+                    muted 
+                    preload="metadata" 
+                    playsinline 
+                    webkit-playsinline="true"
+                    poster="https://placehold.co/300x169/2f61e0/ffffff?text=Video+${product.id}"
+                    data-src="${product.video}">
+                    <source src="${product.video}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                  <button class="play-button" aria-label="Play video">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
                 </div>
-              </a>`;
-              
-            gridContainer.appendChild(videoItem);
-          });
-          
-          // Initialize video playback
-          initVideoPlayback();
-          
-          // Initialize search functionality if search elements exist
-          if (searchContainer && searchInput && searchButton) {
-            initSearch();
-          }
-          
-        } catch (error) {
-          console.error("Error loading products:", error);
-          gridContainer.innerHTML = "<p style='padding: 20px; text-align: center;'>Error loading products. Please try again later.</p>";
+                <div class="video-overlay">
+                  <h3>${product.title || 'No Title'}</h3>
+                  <p>${product.price ? product.price.toFixed(2) : '0.00'} جنية</p>
+                </div>
+              </div>
+            </a>`;
+            
+          gridContainer.appendChild(videoItem);
+        });
+        
+        // Initialize video playback with Intersection Observer
+        initVideoPlayback();
+        
+        // Initialize search functionality if search elements exist
+        if (searchContainer && searchInput && searchButton) {
+          initSearch();
         }
 
-        // Initialize video playback functionality
+        // Initialize video playback functionality with Intersection Observer
         function initVideoPlayback() {
           const videos = document.querySelectorAll('video');
           
-          videos.forEach(video => {
-            // Initialize video state
-            video.pause();
-            video.currentTime = 0;
-            video.muted = true;
-            video.poster = "Samsung ATIV Book 9 Plus Review.jpeg";
+          // Pause all videos function
+          function pauseAllVideos() {
+            videos.forEach(v => {
+              if (!v.paused) {
+                v.pause();
+                v.currentTime = 0;
+                v.closest('.video-item')?.classList.remove('video-playing');
+              }
+            });
+          }
+
+          // Play video function
+          function playVideo(video) {
+            // Pause all other videos first
+            pauseAllVideos();
             
-            // Find the play button (it's a sibling of the video container)
-            const playButton = video.closest('.video-container')?.querySelector('.play-button');
-            
-            // Show play button for all videos
-            if (playButton) {
-              playButton.style.display = 'flex';
+            // Set source only when needed (optimization)
+            if (!video.src && video.dataset.src) {
+              video.src = video.dataset.src;
             }
             
-            // Handle video end
-            video.addEventListener('ended', function() {
-              video.currentTime = 0;
-              video.classList.remove('playing');
-              const playBtn = video.closest('.video-container')?.querySelector('.play-button');
-              if (playBtn) {
-                playBtn.style.display = 'flex';
-              }
-            });
+            // Play the video
+            video.play()
+              .then(() => {
+                video.closest('.video-item')?.classList.add('video-playing');
+              })
+              .catch(error => {
+                console.warn('Video play failed (expected on mobile):', error);
+                // Fallback: show play button for manual play
+                video.closest('.video-item')?.classList.remove('video-playing');
+              });
+          }
+
+          // Handle video click for manual play/pause
+          function handleVideoClick(e) {
+            e.stopPropagation();
+            const video = e.target.tagName === 'VIDEO' ? e.target : e.target.closest('video');
+            if (!video) return;
             
-            // Handle video click to toggle play/pause
-            video.addEventListener('click', function(e) {
-              e.stopPropagation();
-              if (video.paused) {
-                pauseAllVideos();
-                video.play()
-                  .then(() => {
-                    video.classList.add('playing');
-                    const btn = video.closest('.video-container')?.querySelector('.play-button');
-                    if (btn) btn.style.display = 'none';
-                  })
-                  .catch(error => console.error('Error playing video:', error));
-              } else {
-                video.pause();
-                video.currentTime = 0;
-                video.classList.remove('playing');
-                const btn = video.closest('.video-container')?.querySelector('.play-button');
-                if (btn) btn.style.display = 'flex';
-              }
+            if (video.paused) {
+              playVideo(video);
+            } else {
+              video.pause();
+              video.currentTime = 0;
+              video.closest('.video-item')?.classList.remove('video-playing');
+            }
+          }
+
+          // Add event listeners to videos
+          videos.forEach(video => {
+            // Add click handler for manual play
+            video.addEventListener('click', handleVideoClick);
+            
+            // Handle video ending
+            video.addEventListener('ended', () => {
+              video.currentTime = 0;
+              video.closest('.video-item')?.classList.remove('video-playing');
             });
           });
-          
+
           // Handle play button clicks
           document.addEventListener('click', function(e) {
             const playButton = e.target.closest('.play-button');
@@ -770,29 +734,75 @@
             const video = playButton.closest('.video-container')?.querySelector('video');
             if (!video) return;
             
-            // Pause all other videos
-            pauseAllVideos();
-            
-            // Play the clicked video
-            video.play()
-              .then(() => {
-                video.classList.add('playing');
-                playButton.style.display = 'none';
-              })
-              .catch(error => console.error('Error playing video:', error));
+            playVideo(video);
           });
-          
-          // Function to pause all videos
-          function pauseAllVideos() {
-            document.querySelectorAll('video').forEach(v => {
-              if (!v.paused) {
-                v.pause();
-                v.currentTime = 0;
-                v.classList.remove('playing');
-                const btn = v.closest('.video-container')?.querySelector('.play-button');
-                if (btn) btn.style.display = 'flex';
+
+          // Create Intersection Observer for auto-play
+          if ('IntersectionObserver' in window) {
+            const observerOptions = {
+              root: null,
+              rootMargin: '0px',
+              threshold: 0.5 // 50% of video in viewport
+            };
+
+            observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                  // Video is in viewport - play it
+                  playVideo(video);
+                } else {
+                  // Video is out of viewport - pause it
+                  if (!video.paused) {
+                    video.pause();
+                    video.currentTime = 0;
+                    video.closest('.video-item')?.classList.remove('video-playing');
+                  }
+                }
+              });
+            }, observerOptions);
+
+            // Observe all videos
+            videos.forEach(video => {
+              observer.observe(video);
+            });
+          } else {
+            // Fallback for older browsers (Samsung Browser legacy mode)
+            console.warn('IntersectionObserver not supported, using scroll events');
+            let ticking = false;
+            
+            function checkVideos() {
+              videos.forEach(video => {
+                const rect = video.getBoundingClientRect();
+                const isVisible = (
+                  rect.top >= 0 && 
+                  rect.left >= 0 && 
+                  rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && 
+                  rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+                
+                if (isVisible) {
+                  playVideo(video);
+                } else if (!video.paused) {
+                  video.pause();
+                  video.currentTime = 0;
+                  video.closest('.video-item')?.classList.remove('video-playing');
+                }
+              });
+            }
+            
+            window.addEventListener('scroll', () => {
+              if (!ticking) {
+                requestAnimationFrame(() => {
+                  checkVideos();
+                  ticking = false;
+                });
+                ticking = true;
               }
             });
+            
+            // Initial check
+            checkVideos();
           }
         }
         
@@ -865,15 +875,27 @@
           // Show only matching items
           filteredProducts.forEach((product) => {
             const item = document.querySelector(
-              `.video-item a[href*="id=${product.id}"]`
-            )?.closest('.video-item');
+              `.video-item:has(a[href*="id=${product.id}"])`
+            );
             if (item) {
               item.style.display = "block";
             }
           });
         }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+          if (observer) {
+            observer.disconnect();
+          }
+          document.querySelectorAll('video').forEach(v => {
+            v.pause();
+            v.src = '';
+          });
+        });
       });
     </script>
+
     <!-- Footer -->
     <footer style="width: 100%; max-width: 1800px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 30px 15px; margin: 40px auto 0; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
       <!-- Large CAPSLANK Background Text -->
@@ -993,6 +1015,7 @@
         }
       </style>
     </footer>
+    
     <style>
       @media (min-width: 370px) and (max-width: 470px) {
         footer {
@@ -1080,3 +1103,4 @@
     </style>
   </body>
 </html>
+
