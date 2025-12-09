@@ -15,19 +15,19 @@
         border-radius: 2px;
         max-width: 1800px;
       }
-      
+
       .banner-slideshow {
         display: flex;
         transition: transform 0.5s ease-in-out;
         height: 100%;
       }
-      
+
       .banner-slide {
         min-width: 100%;
         height: 200px;
         position: relative;
       }
-      
+
       .banner-slide img {
         width: 100%;
         height: 100%;
@@ -35,7 +35,7 @@
         display: block;
         border-radius: 12px;
       }
-      
+
       .close-banner {
         position: absolute;
         top: 1px;
@@ -51,13 +51,13 @@
         justify-content: center;
         cursor: pointer;
         z-index: 10;
-        transition:  0.3s;
+        transition: 0.3s;
       }
-      
+
       .close-banner:hover {
         background: rgba(0, 0, 0, 0.8);
       }
-      
+
       .close-ad {
         background: none;
         border: none;
@@ -71,11 +71,12 @@
         border-radius: 50%;
         transition: all 0.2s;
       }
-      
+
       .close-ad:hover {
         background-color: rgba(255, 255, 255, 0.1);
         color: #fff;
       }
+
       * {
         box-sizing: border-box;
       }
@@ -87,14 +88,16 @@
         background-color: #000000;
         font-family: Arial, sans-serif;
       }
+
       body::-webkit-scrollbar {
         display: none;
       }
+
       /* Header Styles */
       .header {
         max-width: 1800px;
         border-radius: 2px;
-        margin: 0 auto ;
+        margin: 0 auto;
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
@@ -117,7 +120,8 @@
 
       .logo {
         color: rgb(47, 97, 224);
-        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial,
+          sans-serif;
         font-size: 20px;
         text-decoration: none;
         white-space: nowrap;
@@ -151,7 +155,7 @@
         height: 26px;
         margin-right: 8px;
       }
-      
+
       .search-input:focus {
         background: rgba(255, 255, 255, 1);
         box-shadow: 0 0 10px rgba(47, 97, 224, 0.3);
@@ -230,7 +234,7 @@
       .video-item {
         position: relative;
         width: 100%;
-        aspect-ratio: 16/9;
+        /* aspect-ratio: 16/9; — Removed for older Samsung compatibility */
         background-color: #333;
         border-radius: 8px;
         overflow: hidden;
@@ -238,8 +242,26 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
+      /* Maintain 16:9 using padding-top (critical for older Samsung devices) */
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 9 / 16 = 56.25% */
+        height: 0;
+        overflow: hidden;
+      }
+
+      .video-wrapper video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
       .video-item:hover {
-        
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
@@ -260,12 +282,6 @@
         opacity: 0.9;
       }
 
-      .video-wrapper {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-
       .video-overlay {
         position: absolute;
         bottom: 0;
@@ -283,9 +299,8 @@
         font-weight: 600;
       }
 
-      .video-overlay p{
+      .video-overlay p {
         color: blue;
-        
         direction: rtl;
         margin: 0 0 8px 0;
         font-size: 12px;
@@ -294,13 +309,8 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        /* Standard property for better compatibility */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
         text-overflow: ellipsis;
-        max-height: 2.4em; /* Fallback for line-clamp */
+        max-height: 2.4em;
         line-height: 1.2em;
       }
 
@@ -330,13 +340,7 @@
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
       }
 
-      video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-/* 
+      /* 
       h1 {
         position: absolute;
         bottom: 10px;
@@ -390,31 +394,30 @@
           padding: 5px 0;
           height: 40px;
         }
-        
+
         .header-container {
           height: 30px;
           padding: 0 10px;
         }
-        
+
         .logo {
           font-size: 16px;
-          
-          
         }
-        h1{
+
+        h1 {
           padding-bottom: 10px;
         }
-        
+
         .search-button {
           width: 30px;
           height: 30px;
           border-radius: 4px;
         }
-        
+
         .search-container {
           margin-left: auto;
         }
-        
+
         .search-input {
           border-radius: 4px;
           height: 30px;
@@ -422,25 +425,25 @@
           width: 30px;
           transition: all 0.3s ease;
         }
-        
+
         .search-input:focus {
           width: 150px !important;
           padding: 0 10px !important;
         }
-        
+
         .search-icon {
           width: 16px;
           height: 16px;
         }
-        
+
         /* Hide close button */
         .search-container .close-icon {
           display: none;
         }
-        .close-banner{
+        .close-banner {
           display: none;
         }
-        
+
         /* Update slide banner styles */
         .full-width-banner {
           border-radius: 4px;
@@ -449,14 +452,13 @@
           overflow: hidden;
           box-sizing: border-box;
         }
-        
+
         /* Ensure close button is hidden */
-        .close-button, .close-icon {
+        .close-button,
+        .close-icon {
           display: none !important;
         }
-         
-        
-        
+
         /* Grid and video item adjustments */
         .grid-container {
           display: block;
@@ -473,14 +475,14 @@
           border-radius: 4px;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
+
         .video-item h3 {
           font-size: 12px;
           margin: 5px 0;
           padding: 0 5px;
           line-height: 1.2;
         }
-        
+
         .video-item p {
           font-size: 10px;
           margin: 2px 0;
@@ -527,338 +529,448 @@
       </div>
     </header>
 
-    <div  style="padding: 2px">
+    <div style="padding: 2px">
       <!-- Full-width Banner with Multiple Photos -->
       <div class="full-width-banner" id="banner">
-        <button class="close-banner" id="closeBanner" aria-label="Close banner">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button
+          class="close-banner"
+          id="closeBanner"
+          aria-label="Close banner"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
         <div class="banner-slideshow" id="bannerSlideshow">
           <div class="banner-slide">
-            <img src="Samsung ATIV Book 9 Plus Review.jpeg" alt="Product 1" loading="lazy">
+            <img
+              src="Samsung ATIV Book 9 Plus Review.jpeg"
+              alt="Product 1"
+              loading="lazy"
+            />
           </div>
           <!-- Add more slides as needed -->
           <div class="banner-slide">
-            <img src="Instagram.jpeg" alt="Product 2" loading="lazy">
+            <img src="Instagram.jpeg" alt="Product 2" loading="lazy" />
           </div>
           <div class="banner-slide">
-            <img src="(1) Instagram.jpeg" alt="Product 3" loading="lazy">
+            <img src="(1) Instagram.jpeg" alt="Product 3" loading="lazy" />
           </div>
         </div>
       </div>
 
       <div class="grid-container">
         <!-- Video items will be generated here -->
+      </div>
     </div>
 
     <script>
-      // Banner slideshow functionality
-      document.addEventListener('DOMContentLoaded', function() {
-        const banner = document.getElementById('banner');
-        const slideshow = document.getElementById('bannerSlideshow');
-        const closeButton = document.getElementById('closeBanner');
-        let currentSlide = 0;
-        
-        // Close banner
-        if (closeButton) {
-          closeButton.addEventListener('click', function() {
-            banner.style.display = 'none';
-          });
-        }
-        
-        // Auto-advance slides
-        function nextSlide() {
-          const slides = document.querySelectorAll('.banner-slide');
-          currentSlide = (currentSlide + 1) % slides.length;
-          slideshow.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
-        
-        // Change slide every 5 seconds
-        setInterval(nextSlide, 5000);
-      });
-
-      // Main content script
       document.addEventListener("DOMContentLoaded", async function () {
-  const gridContainer = document.querySelector(".grid-container");
-
-  try {
-    // Fetch products from the external JSON file
-    const response = await fetch("products.json");
-    if (!response.ok) {
-      throw new Error("Failed to load products");
-    }
-    const data = await response.json();
-    const products = data.products;
-
-    // Create video items for each product
-    products.forEach((product) => {
-      const videoItem = document.createElement("div");
-      videoItem.className = "video-item";
-
-      const views =
-        product.stats.views >= 1000
-          ? `${(product.stats.views / 1000).toFixed(1)}K`
-          : product.stats.views;
-
-      videoItem.innerHTML = `
-                            <a href="product-detail.html?id=${
-                              product.id
-                            }" class="video-link">
-                                <div class="video-wrapper">
-                                    <video loop muted preload="metadata" playsinline>
-                                        <source src="${
-                                          product.video
-                                        }" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <div class="video-overlay">
-                                        <h3>${product.title}</h3>
-                                        <p>${product.price.toFixed(2)}جنية</p>
-
-                                        <!-- <div class="video-stats">
-                                             <span>👁️ ${views}</span>
-                                             <span>👍 ${
-                                               product.stats.likes
-                                             }%</span>
-                                             <span>💬 ${
-                                               product.stats.comments
-                                             }</span> 
-                                        </div> -->
-
-
-
-
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-      gridContainer.appendChild(videoItem);
-    });
-
-    // Handle hover play/pause for videos
-    const videoItems = document.querySelectorAll(".video-item");
-
-    videoItems.forEach((item) => {
-      const video = item.querySelector("video");
-
-      // Mute and set volume to 0 to ensure no sound plays
-      video.muted = true;
-      video.volume = 0;
-      
-
-      // Pause video initially
-      video.pause();
-
-      // Play on hover
-      item.addEventListener("mouseenter", () => {
-        video.play().catch((e) => console.log("Video play failed:", e));
-      });
-
-      // Pause when not hovering
-      item.addEventListener("mouseleave", () => {
-        video.pause();
-        video.currentTime = 0; // Reset to start
-      });
-    });
-  } catch (error) {
-    console.error("Error loading products:", error);
-    gridContainer.innerHTML =
-      "<p>Error loading products. Please try again later.</p>";
-  }
-});
-
-      // Toggle search functionality
-      document.addEventListener("DOMContentLoaded", function () {
-        const searchContainer = document.querySelector(".search-container");
-        const searchInput = document.querySelector(".search-input");
-        const searchButton = document.querySelector(".search-button");
-        let products = []; // Will store the products for searching
-
-        // Toggle search on mobile
-        searchButton.addEventListener("click", function (e) {
-          if (window.innerWidth < 768) {
-            e.preventDefault();
-            searchContainer.classList.toggle("active");
-            if (searchContainer.classList.contains("active")) {
-              searchInput.focus();
-            }
-          }
-        });
-
-        // Close search when clicking outside
-        document.addEventListener("click", function (e) {
-          if (
-            window.innerWidth < 768 &&
-            !searchContainer.contains(e.target) &&
-            e.target !== searchButton
-          ) {
-            searchContainer.classList.remove("active");
-          }
-        });
-
-        // Close search on escape key
-        document.addEventListener("keydown", function (e) {
-          if (
-            e.key === "Escape" &&
-            searchContainer.classList.contains("active")
-          ) {
-            searchContainer.classList.remove("active");
-          }
-        });
-
-        // Function to perform search
-        function performSearch() {
-          const searchTerm = searchInput.value.trim().toLowerCase();
-          const videoItems = document.querySelectorAll(".video-item");
-
-          if (!searchTerm) {
-            // If search is empty, show all items
-            videoItems.forEach((item) => {
-              item.style.display = "block";
-            });
-            return;
-          }
-
-          // Search through products
-          const filteredProducts = products.filter((product) => {
-            const title = product.title?.toLowerCase() || "";
-            const price = product.price?.toString() || "";
-            return (
-              title.includes(searchTerm) ||
-              price.includes(searchTerm) ||
-              title.includes(searchTerm.replace(/\s+/g, " "))
-            ); // Handle multiple spaces
-          });
-
-          // Hide all items first
-          videoItems.forEach((item) => {
-            item.style.display = "none";
-          });
-
-          // Show only matching items
-          filteredProducts.forEach((product) => {
-            const item = document.querySelector(
-              `.video-item a[href="product-detail.html?id=${product.id}"]`
-            )?.parentElement;
-            if (item) {
-              item.style.display = "block";
-            }
-          });
+        // ==========================
+        // 1. Banner Slideshow
+        // ==========================
+        const banner = document.getElementById("banner");
+        const closeButton = document.getElementById("closeBanner");
+        if (closeButton) {
+          closeButton.addEventListener("click", () =>
+            banner.style.display === "none"
+              ? (banner.style.display = "block")
+              : (banner.style.display = "none")
+          );
         }
 
-        // Get products when the page loads
+        let currentSlide = 0;
+        function nextSlide() {
+          const slides = document.querySelectorAll(".banner-slide");
+          if (slides.length === 0) return;
+          currentSlide = (currentSlide + 1) % slides.length;
+          document.getElementById("bannerSlideshow").style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        setInterval(nextSlide, 5000);
+
+        // ==========================
+        // 2. Load Products (with fallback for local file)
+        // ==========================
+        const gridContainer = document.querySelector(".grid-container");
+        let products = [];
+
         async function loadProducts() {
           try {
-            const response = await fetch("products.json");
-            if (!response.ok) {
-              throw new Error("Failed to load products");
+            // Try fetch first
+            let response;
+            try {
+              response = await fetch("products.json");
+              if (!response.ok) throw new Error("HTTP " + response.status);
+              const data = await response.json();
+              products = data.products || [];
+            } catch (err) {
+              // Fallback to XMLHttpRequest (for file:// protocol)
+              return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", "products.json", true);
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    try {
+                      const data = JSON.parse(xhr.responseText);
+                      products = data.products || [];
+                      resolve();
+                    } catch (e) {
+                      reject(e);
+                    }
+                  } else {
+                    reject(new Error("XHR failed: " + xhr.status));
+                  }
+                };
+                xhr.onerror = () => reject(new Error("Network error"));
+                xhr.send();
+              });
             }
-            const data = await response.json();
-            products = data.products || [];
 
-            // Initialize automatic search
-            searchInput.addEventListener("input", performSearch);
-            // Keep the button click for better UX
-            searchButton.addEventListener("click", performSearch);
+            renderProducts();
           } catch (error) {
-            console.error("Error loading products:", error);
+            console.error("❌ Error loading products.json:", error);
+            gridContainer.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #ff6b6b;">
+                <p>⚠️ Failed to load data.</p>
+                <p>Please run this site via a local server (e.g., <code>npx live-server</code> or <code>python -m http.server</code>).</p>
+                <p><small>Reason: Browsers block local JSON fetch for security.</small></p>
+              </div>`;
           }
         }
 
-        // Load products and initialize search
-        loadProducts();
+        function renderProducts() {
+          gridContainer.innerHTML = ""; // Clear first
 
-        // Video autoplay on scroll for mobile - one at a time
+          products.forEach((product) => {
+            const views =
+              product.stats.views >= 1000
+                ? `${(product.stats.views / 1000).toFixed(1)}K`
+                : product.stats.views;
+
+            const videoItem = document.createElement("div");
+            videoItem.className = "video-item";
+            videoItem.innerHTML = `
+              <a href="product-detail.html?id=${product.id}" class="video-link">
+                <div class="video-wrapper">
+                  <video 
+                    muted 
+                    playsinline 
+                    webkit-playsinline 
+                    x5-playsinline 
+                    preload="metadata" 
+                    loop
+                  >
+                    <source src="${product.video}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                  <div class="video-overlay">
+                    <h3>${product.title}</h3>
+                    <p>${product.price.toFixed(2)} جنية</p>
+                  </div>
+                </div>
+              </a>
+            `;
+            gridContainer.appendChild(videoItem);
+          });
+
+          initVideoHandlers();
+          initSearch();
+        }
+
+        // ==========================
+        // 3. Video Playback Handlers
+        // ==========================
         let currentPlayingVideo = null;
-        
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            // Consider a video in viewport if it's at least 50% visible
-            return (
-                rect.top >= -rect.height * 0.5 &&
-                rect.bottom <= viewportHeight + rect.height * 0.5
-            );
-        }
 
-        function handleVideoPlayback() {
-            if (window.innerWidth < 320 || window.innerWidth > 470) return;
-            
-            const videos = Array.from(document.querySelectorAll('.video-item video'));
-            const visibleVideos = videos.filter(video => isInViewport(video));
-            
-            // If no videos are visible, pause the current one
-            if (visibleVideos.length === 0) {
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
+        function initVideoHandlers() {
+          const videoItems = document.querySelectorAll(".video-item");
+          const videos = Array.from(videoItems).map((item) =>
+            item.querySelector("video")
+          );
+
+          // === Hover Playback (Desktop/Tablet) ===
+          videoItems.forEach((item) => {
+            const video = item.querySelector("video");
+            if (!video) return;
+
+            // Guarantee mute
+            video.muted = true;
+            video.volume = 0;
+            video.pause(); // Ensure paused initially
+
+            item.addEventListener("mouseenter", () => {
+              video.currentTime = 0;
+              video.play().catch((e) =>
+                console.warn("Hover play failed (expected on some browsers):", e)
+              );
+            });
+
+            item.addEventListener("mouseleave", () => {
+              video.pause();
+            });
+          });
+
+          // === Scroll-based Playback (Mobile: 320–470px only) ===
+          if (
+            window.matchMedia("(min-width: 320px) and (max-width: 470px)")
+              .matches
+          ) {
+            const observer = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  const video = entry.target;
+                  if (entry.isIntersecting) {
+                    if (currentPlayingVideo && currentPlayingVideo !== video) {
+                      currentPlayingVideo.pause();
+                    }
+                    video.currentTime = 0;
+                    video
+                      .play()
+                      .catch((e) =>
+                        console.warn("Scroll autoplay blocked:", e)
+                      );
+                    currentPlayingVideo = video;
+                  } else if (currentPlayingVideo === video) {
+                    video.pause();
                     currentPlayingVideo = null;
-                }
-                return;
-            }
-            
-            // Find the most centered video
-            const viewportCenter = window.innerHeight / 2;
-            const closestVideo = visibleVideos.reduce((closest, video) => {
-                const rect = video.getBoundingClientRect();
-                const videoCenter = rect.top + rect.height / 2;
-                const distance = Math.abs(viewportCenter - videoCenter);
-                return distance < closest.distance ? {video, distance} : closest;
-            }, {video: null, distance: Infinity}).video;
-            
-            // If we have a new video to play
-            if (closestVideo && currentPlayingVideo !== closestVideo) {
-                // Pause current video if it exists
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
-                }
-                // Play the new video
-                closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
-                currentPlayingVideo = closestVideo;
-            }
-        }
-
-        // Throttle scroll events for better performance
-        let isScrolling = false;
-        function throttleScroll() {
-            if (!isScrolling) {
-                window.requestAnimationFrame(() => {
-                    handleVideoPlayback();
-                    isScrolling = false;
+                  }
                 });
-                isScrolling = true;
-            }
+              },
+              { threshold: 0.5 }
+            );
+
+            videos.forEach((video) => video && observer.observe(video));
+
+            // Cleanup on unload
+            window.addEventListener("beforeunload", () => {
+              videos.forEach((v) => v && v.pause());
+            });
+          }
         }
 
-        // Add event listeners
-        window.addEventListener('scroll', throttleScroll);
-        window.addEventListener('resize', throttleScroll);
-        document.addEventListener('DOMContentLoaded', handleVideoPlayback);
+        // ==========================
+        // 4. Search Functionality
+        // ==========================
+        function initSearch() {
+          const searchInput = document.querySelector(".search-input");
+          const searchButton = document.querySelector(".search-button");
+          const searchContainer = document.querySelector(".search-container");
+
+          searchButton.addEventListener("click", (e) => {
+            if (window.innerWidth < 768) {
+              e.preventDefault();
+              searchContainer.classList.toggle("active");
+              if (searchContainer.classList.contains("active")) {
+                searchInput.focus();
+              }
+            }
+          });
+
+          document.addEventListener("click", (e) => {
+            if (
+              window.innerWidth < 768 &&
+              !searchContainer.contains(e.target) &&
+              e.target !== searchButton
+            ) {
+              searchContainer.classList.remove("active");
+            }
+          });
+
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") searchContainer.classList.remove("active");
+          });
+
+          searchInput.addEventListener("input", () => {
+            const term = searchInput.value.trim().toLowerCase();
+            const items = document.querySelectorAll(".video-item");
+            items.forEach((item) => (item.style.display = "block"));
+
+            if (term) {
+              const filtered = products.filter(
+                (p) =>
+                  p.title.toLowerCase().includes(term) ||
+                  p.price.toString().includes(term)
+              );
+              items.forEach((item) => {
+                const link = item.querySelector(".video-link");
+                const url = new URL(link.href, window.location);
+                const id = url.searchParams.get("id");
+                item.style.display = filtered.some((p) => p.id == id)
+                  ? "block"
+                  : "none";
+              });
+            }
+          });
+        }
+
+        // ==========================
+        // Run everything
+        // ==========================
+        await loadProducts();
       });
     </script>
+
     <!-- Footer -->
-    <footer style="width: 100%; max-width: 1800px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 30px 15px; margin: 40px auto 0; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+    <footer
+      style="
+        width: 100%;
+        max-width: 1800px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 30px 15px;
+        margin: 40px auto 0;
+        border-radius: 12px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+      "
+    >
       <!-- Large CAPSLANK Background Text -->
-      <h1 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 25vw; font-weight: 900; letter-spacing: 2px; color: rgba(14, 120, 220, 0.2); margin: 0; line-height: 1; text-transform: uppercase; font-family: 'Arial Black', Arial, sans-serif; pointer-events: none; white-space: nowrap; z-index: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">CAPSLANK</h1>
-      
-      <div style="position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px;">
+      <h1
+        style="
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 25vw;
+          font-weight: 900;
+          letter-spacing: 2px;
+          color: rgba(14, 120, 220, 0.2);
+          margin: 0;
+          line-height: 1;
+          text-transform: uppercase;
+          font-family: 'Arial Black', Arial, sans-serif;
+          pointer-events: none;
+          white-space: nowrap;
+          z-index: 0;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        "
+      >
+        CAPSLANK
+      </h1>
+
+      <div
+        style="
+          position: relative;
+          z-index: 1;
+          max-width: 1200px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        "
+      >
         <!-- Logo and Description -->
         <div class="footer-section">
-          <h3 style="color: #2f61e0; margin-bottom: 20px; font-size: 1.5rem; position: relative;">CAPSLANK</h3>
-          <p style="color: #aaa; line-height: 1.6; margin-bottom: 20px; position: relative;">Your premier destination for high-quality video content and products. Discover amazing deals and latest trends.</p>
-          <div style="display: flex; gap: 15px; margin-top: 20px; position: relative;">
-            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+          <h3
+            style="
+              color: #2f61e0;
+              margin-bottom: 20px;
+              font-size: 1.5rem;
+              position: relative;
+            "
+          >
+            CAPSLANK
+          </h3>
+          <p
+            style="
+              color: #aaa;
+              line-height: 1.6;
+              margin-bottom: 20px;
+              position: relative;
+            "
+          >
+            Your premier destination for high-quality video content and
+            products. Discover amazing deals and latest trends.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 15px;
+              margin-top: 20px;
+              position: relative;
+            "
+          >
+            <a
+              href="#"
+              style="
+                color: #fff;
+                font-size: 1.2rem;
+                transition: all 0.3s;
+                background: rgba(0, 0, 0, 0.5);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
               <i class="fab fa-facebook"></i>
             </a>
-            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+            <a
+              href="#"
+              style="
+                color: #fff;
+                font-size: 1.2rem;
+                transition: all 0.3s;
+                background: rgba(0, 0, 0, 0.5);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
               <i class="fab fa-twitter"></i>
             </a>
-            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+            <a
+              href="#"
+              style="
+                color: #fff;
+                font-size: 1.2rem;
+                transition: all 0.3s;
+                background: rgba(0, 0, 0, 0.5);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
               <i class="fab fa-instagram"></i>
             </a>
-            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+            <a
+              href="#"
+              style="
+                color: #fff;
+                font-size: 1.2rem;
+                transition: all 0.3s;
+                background: rgba(0, 0, 0, 0.5);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
               <i class="fab fa-youtube"></i>
             </a>
           </div>
@@ -866,57 +978,269 @@
 
         <!-- Quick Links -->
         <div class="footer-section">
-          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Quick Links</h4>
-          <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
-            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Home</a></li>
-            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Products</a></li>
-            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Categories</a></li>
-            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">New Arrivals</a></li>
-            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Deals</a></li>
+          <h4
+            style="
+              color: #fff;
+              margin-bottom: 20px;
+              font-size: 1.1rem;
+              position: relative;
+              padding-bottom: 10px;
+            "
+          >
+            Quick Links
+          </h4>
+          <ul style="list-style: none; padding: 0; margin: 0; position: relative">
+            <li style="margin-bottom: 10px">
+              <a
+                href="#"
+                style="
+                  color: #aaa;
+                  text-decoration: none;
+                  transition: all 0.3s;
+                  display: block;
+                  padding: 5px 0;
+                  position: relative;
+                  z-index: 1;
+                "
+                >Home</a
+              >
+            </li>
+            <li style="margin-bottom: 10px">
+              <a
+                href="#"
+                style="
+                  color: #aaa;
+                  text-decoration: none;
+                  transition: all 0.3s;
+                  display: block;
+                  padding: 5px 0;
+                  position: relative;
+                  z-index: 1;
+                "
+                >Products</a
+              >
+            </li>
+            <li style="margin-bottom: 10px">
+              <a
+                href="#"
+                style="
+                  color: #aaa;
+                  text-decoration: none;
+                  transition: all 0.3s;
+                  display: block;
+                  padding: 5px 0;
+                  position: relative;
+                  z-index: 1;
+                "
+                >Categories</a
+              >
+            </li>
+            <li style="margin-bottom: 10px">
+              <a
+                href="#"
+                style="
+                  color: #aaa;
+                  text-decoration: none;
+                  transition: all 0.3s;
+                  display: block;
+                  padding: 5px 0;
+                  position: relative;
+                  z-index: 1;
+                "
+                >New Arrivals</a
+              >
+            </li>
+            <li style="margin-bottom: 10px">
+              <a
+                href="#"
+                style="
+                  color: #aaa;
+                  text-decoration: none;
+                  transition: all 0.3s;
+                  display: block;
+                  padding: 5px 0;
+                  position: relative;
+                  z-index: 1;
+                "
+                >Deals</a
+              >
+            </li>
           </ul>
         </div>
 
         <!-- Contact Info -->
         <div class="footer-section">
-          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Contact Us</h4>
-          <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
-            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; position: relative; z-index: 1;">
-              <i class="fas fa-map-marker-alt" style="color: #2f61e0; margin-right: 10px; margin-top: 4px; min-width: 16px;"></i>
-              <span style="color: #aaa;">123 Street, City, Country</span>
+          <h4
+            style="
+              color: #fff;
+              margin-bottom: 20px;
+              font-size: 1.1rem;
+              position: relative;
+              padding-bottom: 10px;
+            "
+          >
+            Contact Us
+          </h4>
+          <ul style="list-style: none; padding: 0; margin: 0; position: relative">
+            <li
+              style="
+                margin-bottom: 15px;
+                display: flex;
+                align-items: flex-start;
+                position: relative;
+                z-index: 1;
+              "
+            >
+              <i
+                class="fas fa-map-marker-alt"
+                style="
+                  color: #2f61e0;
+                  margin-right: 10px;
+                  margin-top: 4px;
+                  min-width: 16px;
+                "
+              ></i>
+              <span style="color: #aaa">123 Street, City, Country</span>
             </li>
-            <li style="margin-bottom: 15px; display: flex; align-items: center; position: relative; z-index: 1;">
-              <i class="fas fa-phone" style="color: #2f61e0; margin-right: 10px; min-width: 16px;"></i>
-              <span style="color: #aaa;">+1 234 567 890</span>
+            <li
+              style="
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                position: relative;
+                z-index: 1;
+              "
+            >
+              <i
+                class="fas fa-phone"
+                style="
+                  color: #2f61e0;
+                  margin-right: 10px;
+                  min-width: 16px;
+                "
+              ></i>
+              <span style="color: #aaa">+1 234 567 890</span>
             </li>
-            <li style="margin-bottom: 15px; display: flex; align-items: center; position: relative; z-index: 1;">
-              <i class="fas fa-envelope" style="color: #2f61e0; margin-right: 10px; min-width: 16px;"></i>
-              <span style="color: #aaa;">info@capslank.com</span>
+            <li
+              style="
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                position: relative;
+                z-index: 1;
+              "
+            >
+              <i
+                class="fas fa-envelope"
+                style="
+                  color: #2f61e0;
+                  margin-right: 10px;
+                  min-width: 16px;
+                "
+              ></i>
+              <span style="color: #aaa">info@capslank.com</span>
             </li>
           </ul>
         </div>
 
         <!-- Newsletter -->
         <div class="footer-section">
-          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Newsletter</h4>
-          <p style="color: #aaa; margin-bottom: 15px; line-height: 1.6; position: relative; z-index: 1;">Subscribe to our newsletter for the latest updates and offers.</p>
-          <form style="display: flex; gap: 10px; margin-bottom: 20px; position: relative; z-index: 1;">
-            <input type="email" placeholder="Your Email" style="flex: 1; padding: 10px 15px; border: 1px solid #333; border-radius: 5px; background: rgba(255,255,255,0.1); color: #fff; outline: none; transition: all 0.3s;">
-            <button type="submit" style="background: #2f61e0; color: white; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s; white-space: nowrap;">Subscribe</button>
+          <h4
+            style="
+              color: #fff;
+              margin-bottom: 20px;
+              font-size: 1.1rem;
+              position: relative;
+              padding-bottom: 10px;
+            "
+          >
+            Newsletter
+          </h4>
+          <p
+            style="
+              color: #aaa;
+              margin-bottom: 15px;
+              line-height: 1.6;
+              position: relative;
+              z-index: 1;
+            "
+          >
+            Subscribe to our newsletter for the latest updates and offers.
+          </p>
+          <form
+            style="
+              display: flex;
+              gap: 10px;
+              margin-bottom: 20px;
+              position: relative;
+              z-index: 1;
+            "
+          >
+            <input
+              type="email"
+              placeholder="Your Email"
+              style="
+                flex: 1;
+                padding: 10px 15px;
+                border: 1px solid #333;
+                border-radius: 5px;
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                outline: none;
+                transition: all 0.3s;
+              "
+            />
+            <button
+              type="submit"
+              style="
+                background: #2f61e0;
+                color: white;
+                border: none;
+                padding: 0 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s;
+                white-space: nowrap;
+              "
+            >
+              Subscribe
+            </button>
           </form>
         </div>
       </div>
 
       <!-- Copyright -->
-      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; z-index: 1;">
-        <p style="color: #777; margin: 0; font-size: 0.9rem; position: relative;">© 2025 CAPSLANK. All Rights Reserved.</p>
+      <div
+        style="
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          text-align: center;
+          position: relative;
+          z-index: 1;
+        "
+      >
+        <p
+          style="
+            color: #777;
+            margin: 0;
+            font-size: 0.9rem;
+            position: relative;
+          "
+        >
+          © 2025 CAPSLANK. All Rights Reserved.
+        </p>
       </div>
 
       <!-- Add Font Awesome for icons -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      />
 
       <style>
         .footer-section h4::after {
-          content: '';
+          content: "";
           position: absolute;
           left: 0;
           bottom: 0;
@@ -929,13 +1253,14 @@
           transform: translateX(5px) !important;
           background: rgba(47, 97, 224, 0.1) !important;
         }
-        .footer-section a, .footer-section li {
+        .footer-section a,
+        .footer-section li {
           transition: all 0.3s ease;
         }
         button[type="submit"]:hover {
           background: #1a4bb3 !important;
           transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         input[type="email"]:focus {
           border-color: #2f61e0 !important;
@@ -1005,7 +1330,7 @@
           font-size: 60vw !important;
           letter-spacing: 0.5px !important;
           opacity: 0.2 !important;
-           color: #1136bd4d !important;
+          color: #1136bd4d !important;
           text-shadow: 2px 2px 4px #2e2e88 !important;
           transform: translate(-50%, -50%) rotate(90deg) !important;
         }
