@@ -678,7 +678,7 @@
               <a href="product-detail.html?id=${product.id}" class="video-link">
                 <div class="video-wrapper">
                   <div class="video-container">
-                    <video loop muted preload="metadata" playsinline>
+                    <video  muted preload="metadata" playsinline >
                       <source src="${product.video || ''}" type="video/mp4">
                       Your browser does not support the video tag.
                     </video>
@@ -720,6 +720,7 @@
             video.pause();
             video.currentTime = 0;
             video.muted = true;
+            video.poster = "Samsung ATIV Book 9 Plus Review.jpeg";
             
             // Find the play button (it's a sibling of the video container)
             const playButton = video.closest('.video-container')?.querySelector('.play-button');
