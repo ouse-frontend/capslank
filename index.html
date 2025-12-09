@@ -13,7 +13,7 @@
         overflow: hidden;
         max-height: 400px;
         border-radius: 2px;
-        /* max-width: 1800px; */
+        max-width: 1800px;
       }
       
       .banner-slideshow {
@@ -92,10 +92,13 @@
       }
       /* Header Styles */
       .header {
+        max-width: 1800px;
+        border-radius: 2px;
+        margin: 0 auto ;
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        padding: 8px 15px;
+        padding: 8px 5px;
         position: sticky;
         top: 0;
         z-index: 100;
@@ -228,13 +231,11 @@
         position: relative;
         width: 100%;
         aspect-ratio: 16/9;
-        background: #1a1a1a;
+        background-color: #333;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
-        opacity: 0;
-        transform: translateY(20px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       .video-item:hover {
@@ -383,6 +384,59 @@
         }
       }
 
+      /* Video styles */
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        height: 300px; /* Fixed height for video wrapper */
+        overflow: hidden;
+        border-radius: 8px;
+        background-color: #000;
+      }
+      
+      .video-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2;
+      }
+      
+      .play-button:hover {
+        background: rgba(0, 0, 0, 0.7);
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      
+      /* Hide play button when video is playing or on desktop */
+      
+      @media (min-width: 471px) {
+        video.playing + .play-button, .play-button {
+          display: none;
+        }
+      }
+      
       @media (min-width: 320px) and (max-width: 470px) {
         /* Header adjustments */
         .header {
@@ -554,16 +608,22 @@
     </div>
 
     <script>
-      // Main content script - runs when DOM is fully loaded
+      // Main content script
       document.addEventListener("DOMContentLoaded", async function () {
         // Banner slideshow functionality
         const banner = document.getElementById('banner');
         const slideshow = document.getElementById('bannerSlideshow');
         const closeButton = document.getElementById('closeBanner');
+        const gridContainer = document.querySelector(".grid-container");
+        const searchContainer = document.querySelector(".search-container");
+        const searchInput = document.querySelector(".search-input");
+        const searchButton = document.querySelector(".search-button");
+        
         let currentSlide = 0;
+        let products = []; // Will store the products for searching
         
         // Initialize banner slideshow if it exists
-        if (slideshow) {
+        if (banner && slideshow) {
           // Close banner
           if (closeButton) {
             closeButton.addEventListener('click', function() {
@@ -580,62 +640,196 @@
             }
           }
           
-          // Change slide every 5 seconds if we have slides
-          const slides = document.querySelectorAll('.banner-slide');
-          if (slides.length > 0) {
-            setInterval(nextSlide, 5000);
-          }
+          // Change slide every 5 seconds
+          setInterval(nextSlide, 5000);
         }
 
-        // Main grid and search functionality
-        const gridContainer = document.querySelector(".grid-container");
-        const searchContainer = document.querySelector(".search-container");
-        const searchInput = document.querySelector(".search-input");
-        const searchButton = document.querySelector(".search-button");
-        
-        if (!gridContainer || !searchContainer || !searchInput || !searchButton) {
-          console.error("Required elements not found in the DOM");
+        // Check if grid container exists
+        if (!gridContainer) {
+          console.error("Grid container not found!");
           return;
         }
-        
-        let productsData = []; // Store products for search functionality
-        let currentPlayingVideo = null; // Track currently playing video for mobile
-        let currentHoveredVideo = null; // Track hovered video for desktop
 
-        // Toggle search on mobile
-        searchButton.addEventListener("click", function (e) {
-          if (window.innerWidth < 768) {
-            e.preventDefault();
-            searchContainer.classList.toggle("active");
-            if (searchContainer.classList.contains("active")) {
-              searchInput.focus();
+        // Load products and initialize the page
+        try {
+          // Fetch products from the external JSON file
+          const response = await fetch("products.json");
+          if (!response.ok) {
+            throw new Error("Failed to load products");
+          }
+          const data = await response.json();
+          products = data.products || [];
+          
+          if (!Array.isArray(products)) {
+            throw new Error("Invalid products data");
+          }
+
+          // Clear any existing content
+          gridContainer.innerHTML = '';
+
+          // Create video items for each product
+          products.forEach((product) => {
+            if (!product) return;
+            
+            const videoItem = document.createElement("div");
+            videoItem.className = "video-item";
+
+            videoItem.innerHTML = `
+              <a href="product-detail.html?id=${product.id}" class="video-link">
+                <div class="video-wrapper">
+                  <div class="video-container">
+                    <video loop muted preload="metadata" playsinline>
+                      <source src="${product.video || ''}" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <button class="play-button" aria-label="Play video">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="video-overlay">
+                    <h3>${product.title || 'No Title'}</h3>
+                    <p>${product.price ? product.price.toFixed(2) : '0.00'} جنية</p>
+                  </div>
+                </div>
+              </a>`;
+              
+            gridContainer.appendChild(videoItem);
+          });
+          
+          // Initialize video playback
+          initVideoPlayback();
+          
+          // Initialize search functionality if search elements exist
+          if (searchContainer && searchInput && searchButton) {
+            initSearch();
+          }
+          
+        } catch (error) {
+          console.error("Error loading products:", error);
+          gridContainer.innerHTML = "<p style='padding: 20px; text-align: center;'>Error loading products. Please try again later.</p>";
+        }
+
+        // Initialize video playback functionality
+        function initVideoPlayback() {
+          const videos = document.querySelectorAll('video');
+          
+          videos.forEach(video => {
+            // Initialize video state
+            video.pause();
+            video.currentTime = 0;
+            video.muted = true;
+            
+            // Find the play button (it's a sibling of the video container)
+            const playButton = video.closest('.video-container')?.querySelector('.play-button');
+            
+            // Show play button for all videos
+            if (playButton) {
+              playButton.style.display = 'flex';
             }
-          } else {
-            // On desktop, perform search on button click
+            
+            // Handle video end
+            video.addEventListener('ended', function() {
+              video.currentTime = 0;
+              video.classList.remove('playing');
+              const playBtn = video.closest('.video-container')?.querySelector('.play-button');
+              if (playBtn) {
+                playBtn.style.display = 'flex';
+              }
+            });
+            
+            // Handle video click to toggle play/pause
+            video.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (video.paused) {
+                pauseAllVideos();
+                video.play()
+                  .then(() => {
+                    video.classList.add('playing');
+                    const btn = video.closest('.video-container')?.querySelector('.play-button');
+                    if (btn) btn.style.display = 'none';
+                  })
+                  .catch(error => console.error('Error playing video:', error));
+              } else {
+                video.pause();
+                video.currentTime = 0;
+                video.classList.remove('playing');
+                const btn = video.closest('.video-container')?.querySelector('.play-button');
+                if (btn) btn.style.display = 'flex';
+              }
+            });
+          });
+          
+          // Handle play button clicks
+          document.addEventListener('click', function(e) {
+            const playButton = e.target.closest('.play-button');
+            if (!playButton) return;
+            
+            const video = playButton.closest('.video-container')?.querySelector('video');
+            if (!video) return;
+            
+            // Pause all other videos
+            pauseAllVideos();
+            
+            // Play the clicked video
+            video.play()
+              .then(() => {
+                video.classList.add('playing');
+                playButton.style.display = 'none';
+              })
+              .catch(error => console.error('Error playing video:', error));
+          });
+          
+          // Function to pause all videos
+          function pauseAllVideos() {
+            document.querySelectorAll('video').forEach(v => {
+              if (!v.paused) {
+                v.pause();
+                v.currentTime = 0;
+                v.classList.remove('playing');
+                const btn = v.closest('.video-container')?.querySelector('.play-button');
+                if (btn) btn.style.display = 'flex';
+              }
+            });
+          }
+        }
+        
+        // Initialize search functionality
+        function initSearch() {
+          // Toggle search on mobile
+          searchButton.addEventListener("click", function (e) {
+            if (window.innerWidth < 768) {
+              e.preventDefault();
+              searchContainer.classList.toggle("active");
+              if (searchContainer.classList.contains("active")) {
+                searchInput.focus();
+              }
+            }
             performSearch();
-          }
-        });
+          });
 
-        // Close search when clicking outside
-        document.addEventListener("click", function (e) {
-          if (
-            window.innerWidth < 768 &&
-            !searchContainer.contains(e.target) &&
-            e.target !== searchButton
-          ) {
-            searchContainer.classList.remove("active");
-          }
-        });
+          // Close search when clicking outside
+          document.addEventListener("click", function (e) {
+            if (
+              window.innerWidth < 768 &&
+              !searchContainer.contains(e.target) &&
+              e.target !== searchButton
+            ) {
+              searchContainer.classList.remove("active");
+            }
+          });
 
-        // Close search on escape key
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && searchContainer.classList.contains("active")) {
-            searchContainer.classList.remove("active");
-          }
-        });
+          // Close search on escape key
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && searchContainer.classList.contains("active")) {
+              searchContainer.classList.remove("active");
+            }
+          });
 
-        // Search functionality
-        searchInput.addEventListener("input", performSearch);
+          // Initialize search on input
+          searchInput.addEventListener("input", performSearch);
+        }
 
         // Function to perform search
         function performSearch() {
@@ -651,13 +845,14 @@
           }
 
           // Search through products
-          const filteredProducts = productsData.filter((product) => {
-            const title = product.title?.toLowerCase() || "";
-            const price = product.price?.toString() || "";
+          const filteredProducts = products.filter((product) => {
+            if (!product) return false;
+            const title = String(product.title || '').toLowerCase();
+            const price = String(product.price || '');
             return (
               title.includes(searchTerm) ||
               price.includes(searchTerm) ||
-              title.includes(searchTerm.replace(/\s+/g, " ").trim())
+              title.includes(searchTerm.replace(/\s+/g, " "))
             );
           });
 
@@ -668,202 +863,219 @@
 
           // Show only matching items
           filteredProducts.forEach((product) => {
-            const item = document.querySelector(`.video-item a[href="product-detail.html?id=${product.id}"]`)?.parentElement;
+            const item = document.querySelector(
+              `.video-item a[href*="id=${product.id}"]`
+            )?.closest('.video-item');
             if (item) {
               item.style.display = "block";
             }
           });
         }
-
-        // Load products and initialize the page
-        try {
-          // Fetch products from the external JSON file
-          const response = await fetch("products.json");
-          if (!response.ok) {
-            throw new Error("Failed to load products");
-          }
-          const data = await response.json();
-          productsData = data.products || [];
-
-          // Create video items for each product
-          productsData.forEach((product, index) => {
-            const videoItem = document.createElement("div");
-            videoItem.className = "video-item";
-            videoItem.style.transitionDelay = `${index * 0.05}s`;
-
-            videoItem.innerHTML = `
-              <a href="product-detail.html?id=${product.id}" class="video-link">
-                <div class="video-wrapper">
-                  <video loop muted playsinline preload="none" data-src="${product.video}">
-                    <source src="" type="video/mp4">
-                    Your browser does not support the video tag.
-                  </video>
-                  <div class="video-overlay">
-                    <h3>${product.title}</h3>
-                    <p>${product.price.toFixed(2)}جنية</p>
-                  </div>
-                </div>
-              </a>
-            `;
-            gridContainer.appendChild(videoItem);
-
-            // Initialize video element
-            const video = videoItem.querySelector('video');
-            if (video) {
-              
-              video.muted = true;
-              video.volume = 0;
-              video.pause();
-              video.preload = "metadata";
-              
-
-            }
-          });
-
-          // Initialize Intersection Observer for lazy loading and animations
-          const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                const videoItem = entry.target;
-                // Fade in animation
-                videoItem.style.opacity = '1';
-                videoItem.style.transform = 'translateY(0)';
-                
-                // Lazy load video
-                const video = videoItem.querySelector('video');
-                if (video && !video.getAttribute('data-loaded')) {
-                  const src = video.getAttribute('data-src');
-                  if (src) {
-                    video.querySelector('source').src = src;
-                    video.load();
-                    video.setAttribute('data-loaded', 'true');
-                  }
-                }
-                
-                observer.unobserve(videoItem);
-              }
-            });
-          }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px 100px 0px'
-          });
-
-          // Observe all video items
-          document.querySelectorAll('.video-item').forEach(item => {
-            observer.observe(item);
-            
-            // Set up hover events for desktop
-            if (window.innerWidth > 768) {
-              const video = item.querySelector('video');
-              if (video) {
-                item.addEventListener('mouseenter', () => handleVideoHover(video));
-                item.addEventListener('mouseleave', () => handleVideoLeave(video));
-              }
-            }
-          });
-
-          // Initialize video playback for mobile
-          if (window.innerWidth <= 768) {
-            window.addEventListener('scroll', throttle(handleVideoPlayback, 200));
-            window.addEventListener('resize', throttle(handleVideoPlayback, 200));
-            handleVideoPlayback();
-          }
-
-        } catch (error) {
-          console.error("Error loading products:", error);
-          if (gridContainer) {
-            gridContainer.innerHTML = "<p>Error loading products. Please try again later.</p>";
-          }
-        }
-
-        // Function to handle video hover (desktop)
-        function handleVideoHover(video) {
-          if (currentHoveredVideo && currentHoveredVideo !== video) {
-            currentHoveredVideo.pause();
-            currentHoveredVideo.currentTime = 0;
-          }
-          video.play().catch(e => console.log("Video play failed:", e));
-          currentHoveredVideo = video;
-        }
-
-        // Function to handle video leave (desktop)
-        function handleVideoLeave(video) {
-          if (video !== document.querySelector('.video-item video[data-playing]')) {
-            video.pause();
-            video.currentTime = 0;
-          }
-        }
-
-        // Function to check if element is in viewport
-        function isInViewport(element) {
-          const rect = element.getBoundingClientRect();
-          const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-          return (
-            rect.top >= -rect.height * 0.5 &&
-            rect.bottom <= viewportHeight + rect.height * 0.5
-          );
-        }
-
-        // Function to handle video playback (mobile)
-        function handleVideoPlayback() {
-          // Only handle mobile devices (320px - 768px)
-          if (window.innerWidth > 768) return;
-          
-          const videos = Array.from(document.querySelectorAll('.video-item video[data-loaded]'));
-          const visibleVideos = videos.filter(video => isInViewport(video));
-          
-          // If no videos are visible, pause the current one
-          if (visibleVideos.length === 0) {
-            if (currentPlayingVideo) {
-              currentPlayingVideo.pause();
-              currentPlayingVideo.removeAttribute('data-playing');
-              currentPlayingVideo = null;
-            }
-            return;
-          }
-          
-          // Find the most centered video
-          const viewportCenter = window.innerHeight / 2;
-          const { video: closestVideo } = visibleVideos.reduce((closest, video) => {
-            const rect = video.getBoundingClientRect();
-            const videoCenter = rect.top + rect.height / 2;
-            const distance = Math.abs(viewportCenter - videoCenter);
-            return distance < closest.distance ? { video, distance } : closest;
-          }, { video: null, distance: Infinity });
-          
-          // If we have a new video to play and it's not the current one
-          if (closestVideo && currentPlayingVideo !== closestVideo) {
-            // Pause current video if it exists
-            if (currentPlayingVideo) {
-              currentPlayingVideo.pause();
-              currentPlayingVideo.currentTime = 0;
-              currentPlayingVideo.removeAttribute('data-playing');
-            }
-            
-            // Play the new video if it's loaded
-            if (closestVideo.readyState >= 2) {
-              closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
-              closestVideo.setAttribute('data-playing', 'true');
-              currentPlayingVideo = closestVideo;
-            }
-          }
-        }
-
-        // Throttle function for scroll/resize events
-        function throttle(callback, limit) {
-          let waiting = false;
-          return function() {
-            if (!waiting) {
-              callback.apply(this, arguments);
-              waiting = true;
-              setTimeout(() => {
-                waiting = false;
-              }, limit);
-            }
-          };
-        }
-
-      }); // End of DOMContentLoaded
+      });
     </script>
+    <!-- Footer -->
+    <footer style="width: 100%; max-width: 1800px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 30px 15px; margin: 40px auto 0; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+      <!-- Large CAPSLANK Background Text -->
+      <h1 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 25vw; font-weight: 900; letter-spacing: 2px; color: rgba(14, 120, 220, 0.2); margin: 0; line-height: 1; text-transform: uppercase; font-family: 'Arial Black', Arial, sans-serif; pointer-events: none; white-space: nowrap; z-index: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">CAPSLANK</h1>
+      
+      <div style="position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px;">
+        <!-- Logo and Description -->
+        <div class="footer-section">
+          <h3 style="color: #2f61e0; margin-bottom: 20px; font-size: 1.5rem; position: relative;">CAPSLANK</h3>
+          <p style="color: #aaa; line-height: 1.6; margin-bottom: 20px; position: relative;">Your premier destination for high-quality video content and products. Discover amazing deals and latest trends.</p>
+          <div style="display: flex; gap: 15px; margin-top: 20px; position: relative;">
+            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" style="color: #fff; font-size: 1.2rem; transition: all 0.3s; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+              <i class="fab fa-youtube"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Quick Links</h4>
+          <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
+            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Home</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Products</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Categories</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">New Arrivals</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" style="color: #aaa; text-decoration: none; transition: all 0.3s; display: block; padding: 5px 0; position: relative; z-index: 1;">Deals</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="footer-section">
+          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Contact Us</h4>
+          <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
+            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; position: relative; z-index: 1;">
+              <i class="fas fa-map-marker-alt" style="color: #2f61e0; margin-right: 10px; margin-top: 4px; min-width: 16px;"></i>
+              <span style="color: #aaa;">123 Street, City, Country</span>
+            </li>
+            <li style="margin-bottom: 15px; display: flex; align-items: center; position: relative; z-index: 1;">
+              <i class="fas fa-phone" style="color: #2f61e0; margin-right: 10px; min-width: 16px;"></i>
+              <span style="color: #aaa;">+1 234 567 890</span>
+            </li>
+            <li style="margin-bottom: 15px; display: flex; align-items: center; position: relative; z-index: 1;">
+              <i class="fas fa-envelope" style="color: #2f61e0; margin-right: 10px; min-width: 16px;"></i>
+              <span style="color: #aaa;">info@capslank.com</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer-section">
+          <h4 style="color: #fff; margin-bottom: 20px; font-size: 1.1rem; position: relative; padding-bottom: 10px;">Newsletter</h4>
+          <p style="color: #aaa; margin-bottom: 15px; line-height: 1.6; position: relative; z-index: 1;">Subscribe to our newsletter for the latest updates and offers.</p>
+          <form style="display: flex; gap: 10px; margin-bottom: 20px; position: relative; z-index: 1;">
+            <input type="email" placeholder="Your Email" style="flex: 1; padding: 10px 15px; border: 1px solid #333; border-radius: 5px; background: rgba(255,255,255,0.1); color: #fff; outline: none; transition: all 0.3s;">
+            <button type="submit" style="background: #2f61e0; color: white; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s; white-space: nowrap;">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Copyright -->
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; z-index: 1;">
+        <p style="color: #777; margin: 0; font-size: 0.9rem; position: relative;">© 2025 CAPSLANK. All Rights Reserved.</p>
+      </div>
+
+      <!-- Add Font Awesome for icons -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+      <style>
+        .footer-section h4::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 40px;
+          height: 2px;
+          background: #2f61e0;
+        }
+        .footer-section a:hover {
+          color: #2f61e0 !important;
+          transform: translateX(5px) !important;
+          background: rgba(47, 97, 224, 0.1) !important;
+        }
+        .footer-section a, .footer-section li {
+          transition: all 0.3s ease;
+        }
+        button[type="submit"]:hover {
+          background: #1a4bb3 !important;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        input[type="email"]:focus {
+          border-color: #2f61e0 !important;
+          box-shadow: 0 0 0 2px rgba(47, 97, 224, 0.2);
+        }
+        @media (max-width: 768px) {
+          .footer-section {
+            text-align: center;
+          }
+          .footer-section h4::after {
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          footer h1 {
+            font-size: 40vw !important;
+            opacity: 0.3 !important;
+            letter-spacing: 3px !important;
+          }
+        }
+      </style>
+    </footer>
+    <style>
+      @media (min-width: 370px) and (max-width: 470px) {
+        footer {
+          padding: 20px 12px !important;
+        }
+        footer h1 {
+          font-size: 18vw !important;
+          letter-spacing: 1px !important;
+        }
+        .footer-section {
+          text-align: center;
+        }
+        .footer-section h3 {
+          font-size: 1.2rem !important;
+          margin-bottom: 12px !important;
+        }
+        .footer-section h4 {
+          font-size: 1.1rem !important;
+          margin-bottom: 12px !important;
+        }
+        .footer-section p {
+          font-size: 0.85rem !important;
+          line-height: 1.4 !important;
+          margin-bottom: 15px !important;
+        }
+        .footer-section form {
+          flex-direction: column;
+          gap: 8px !important;
+        }
+        .footer-section form input[type="email"] {
+          width: 100% !important;
+          margin-bottom: 8px;
+          font-size: 0.9rem !important;
+          padding: 6px 10px !important;
+        }
+      }
+      @media (min-width: 320px) and (max-width: 369px) {
+        footer {
+          padding: 16px 8px !important;
+          margin-top: 16px !important;
+        }
+        footer h1 {
+          font-size: 16vw !important;
+          letter-spacing: 0.5px !important;
+          opacity: 0.2 !important;
+        }
+        .footer-section {
+          text-align: center;
+          padding: 0 4px;
+        }
+        .footer-section h3 {
+          font-size: 1.1rem !important;
+          margin-bottom: 10px !important;
+        }
+        .footer-section h4 {
+          font-size: 1rem !important;
+          margin-bottom: 10px !important;
+        }
+        .footer-section p {
+          font-size: 0.8rem !important;
+          line-height: 1.4 !important;
+          margin-bottom: 12px !important;
+        }
+        .footer-section form {
+          flex-direction: column;
+          gap: 8px !important;
+        }
+        .footer-section form input[type="email"],
+        .footer-section form button {
+          width: 100% !important;
+          padding: 6px 10px !important;
+          font-size: 0.85rem !important;
+        }
+        .footer-section form button {
+          margin: 0 !important;
+          padding: 8px !important;
+        }
+      }
+      @media (min-width: 471px) {
+        footer > div {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+          gap: 30px !important;
+        }
+      }
+    </style>
   </body>
 </html>
