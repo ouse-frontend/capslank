@@ -68,7 +68,7 @@ color: #666;
 .buy-button {
 display: inline-block;
 padding: 12px 30px;
-background-color: #4caf50;
+background-color: #0088cc;
 color: white;
 text-decoration: none;
 border-radius: 4px;
@@ -81,11 +81,11 @@ font-size: 16px;
 }
 
 .buy-button:hover {
-background-color: #45a049;
+background-color: #006699;
 }
 
-/* WhatsApp Order Form Styles */
-.whatsapp-form {
+/* Telegram Order Form Styles */
+.telegram-form {
 display: none;
 position: fixed;
 top: 0;
@@ -100,11 +100,12 @@ align-items: center;
 
 .form-container {
 background: white;
-padding: 20px;
-border-radius: 8px;
+padding: 25px;
+border-radius: 10px;
 width: 90%;
-max-width: 400px;
+max-width: 420px;
 position: relative;
+box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
 }
 
 .form-group {
@@ -115,15 +116,25 @@ margin-bottom: 15px;
 display: block;
 margin-bottom: 5px;
 font-weight: bold;
+color: #333;
 }
 
 .form-group input,
 .form-group textarea {
 width: 100%;
-padding: 8px;
+padding: 10px;
 border: 1px solid #ddd;
 border-radius: 4px;
 box-sizing: border-box;
+font-size: 14px;
+transition: border 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+outline: none;
+border-color: #0088cc;
+box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.1);
 }
 
 .form-group textarea {
@@ -132,7 +143,7 @@ resize: vertical;
 }
 
 .submit-btn {
-background-color: #25d366;
+background-color: #0088cc;
 color: white;
 border: none;
 padding: 12px 20px;
@@ -141,22 +152,96 @@ cursor: pointer;
 font-size: 16px;
 width: 100%;
 margin-top: 10px;
+font-weight: bold;
+transition: background-color 0.3s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
 }
 
 .submit-btn:hover {
-background-color: #128c7e;
+background-color: #006699;
+}
+
+.submit-btn:disabled {
+background-color: #cccccc;
+cursor: not-allowed;
 }
 
 .close-btn {
 position: absolute;
 right: 15px;
 top: 10px;
-font-size: 24px;
+font-size: 28px;
 cursor: pointer;
 background: none;
 border: none;
-font-size: 28px;
 color: #666;
+line-height: 1;
+padding: 0;
+width: 30px;
+height: 30px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+background-color: #f0f0f0;
+}
+
+/* Status Messages */
+.success-message {
+background-color: #d4edda;
+color: #155724;
+border: 1px solid #c3e6cb;
+padding: 12px;
+border-radius: 4px;
+margin-top: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.error-message {
+background-color: #f8d7da;
+color: #721c24;
+border: 1px solid #f5c6cb;
+padding: 12px;
+border-radius: 4px;
+margin-top: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.loading-message {
+background-color: #d1ecf1;
+color: #0c5460;
+border: 1px solid #bee5eb;
+padding: 12px;
+border-radius: 4px;
+margin-top: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.loading-spinner {
+width: 20px;
+height: 20px;
+border: 3px solid #f3f3f3;
+border-top: 3px solid #0088cc;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
 }
 
 @media (min-width: 768px) {
@@ -222,6 +307,17 @@ text-align: right;
 [lang="ar"] .product-meta {
 text-align: right;
 }
+
+.form-container {
+padding: 20px 15px;
+margin: 10px;
+}
+
+.form-group input,
+.form-group textarea {
+padding: 8px;
+font-size: 13px;
+}
 }
 </style>
 </head>
@@ -247,7 +343,9 @@ text-align: right;
 Loading product description...
 </p>
 
-<button type="button" class="buy-button" id="buyButton">Buy Now</button>
+<button type="button" class="buy-button" id="buyButton">
+  <i class="fab fa-telegram"></i> Order via Telegram
+</button>
 
 <div class="product-details">
 <h3>Product Details</h3>
@@ -258,10 +356,63 @@ Loading product description...
 </div>
 </div>
 
+<!-- Telegram Order Form -->
+<div id="telegramForm" class="telegram-form">
+<div class="form-container">
+<button class="close-btn" onclick="closeTelegramForm()">&times;</button>
+<h2 style="margin: 0 0 20px 0; color: #0088cc; text-align: center;">
+  <i class="fab fa-telegram"></i> Order Details
+</h2>
+<form id="telegramOrderForm">
+<input type="hidden" id="tgProductName" />
+<input type="hidden" id="tgProductPrice" />
+<input type="hidden" id="tgPageUrl" />
+
+<div class="form-group">
+<label for="tgName">Your Name *</label>
+<input type="text" id="tgName" required placeholder="Enter your full name" />
+</div>
+
+<div class="form-group">
+<label for="tgPhone">Phone Number *</label>
+<input type="tel" id="tgPhone" required placeholder="01012345678" />
+</div>
+
+<div class="form-group">
+<label for="tgAddress">Delivery Address *</label>
+<textarea id="tgAddress" required placeholder="Street, City, District"></textarea>
+</div>
+
+<div class="form-group">
+<label for="tgQuantity">Quantity *</label>
+<input type="number" id="tgQuantity" min="1" value="1" required />
+</div>
+
+<div class="form-group">
+<label for="tgNotes">Additional Notes</label>
+<textarea id="tgNotes" placeholder="Any special requests or notes"></textarea>
+</div>
+
+<button type="submit" class="submit-btn" id="telegramSubmitBtn">
+  <i class="fab fa-telegram"></i> Send Order
+</button>
+
+<div id="telegramStatus" style="margin-top: 15px; display: none;">
+<!-- Status messages will appear here -->
+</div>
+</form>
+</div>
+</div>
+
+<!-- Font Awesome -->
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
 <script>
 // Function to detect Arabic text
 function isArabic(text) {
-// Regular expression to match Arabic characters
 const arabicRegex =
 /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
 return arabicRegex.test(text);
@@ -356,6 +507,21 @@ detailsList.innerHTML = product.details
 .map((detail) => `<li>${detail}</li>`)
 .join("");
 }
+
+// Initialize Telegram form
+const buyButton = document.getElementById("buyButton");
+if (buyButton) {
+buyButton.addEventListener("click", openTelegramForm);
+}
+
+const telegramOrderForm = document.getElementById("telegramOrderForm");
+if (telegramOrderForm) {
+telegramOrderForm.addEventListener("submit", sendTelegramOrder);
+}
+
+// Set page URL in hidden field
+document.getElementById("tgPageUrl").value = window.location.href;
+
 } catch (error) {
 console.error("Error loading product:", error);
 const productInfo = document.querySelector(".product-info");
@@ -367,226 +533,242 @@ productInfo.innerHTML = `
 `;
 }
 }
-});
-</script>
 
-<!-- WhatsApp Order Form -->
-<div id="whatsappForm" class="whatsapp-form">
-<div class="form-container">
-<button class="close-btn" onclick="closeOrderForm()">&times;</button>
-<h2>Order Details</h2>
-<form id="orderForm" onsubmit="sendOrder(event)">
-<input type="hidden" id="productName" />
-<input type="hidden" id="productPrice" />
-
-<div class="form-group">
-<label for="name">Your Name *</label>
-<input type="text" id="name" required />
-</div>
-
-<div class="form-group">
-<label for="phone">Phone Number *</label>
-<input type="tel" id="phone" required />
-</div>
-
-<div class="form-group">
-<label for="address">Delivery Address *</label>
-<textarea id="address" required></textarea>
-</div>
-
-<div class="form-group">
-<label for="quantity">Quantity *</label>
-<input type="number" id="quantity" min="1" value="1" required />
-</div>
-
-<div class="form-group">
-<label for="notes">Additional Notes</label>
-<textarea id="notes"></textarea>
-</div>
-
-<button type="submit" class="submit-btn">
-<i class="fab fa-whatsapp"></i> Send Order via WhatsApp
-</button>
-</form>
-</div>
-</div>
-
-<!-- Font Awesome for WhatsApp icon -->
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-/>
-
-<script>
 // Error handling for uncaught errors
 window.addEventListener("error", function (error) {
 console.error("Uncaught error:", error);
-// Optionally show a user-friendly error message
-const errorDiv = document.createElement("div");
-errorDiv.style.background = "#ffebee";
-errorDiv.style.color = "#c62828";
-errorDiv.style.padding = "10px";
-errorDiv.style.margin = "10px 0";
-errorDiv.style.borderRadius = "4px";
-errorDiv.textContent = "An error occurred. Please try again.";
-document.body.prepend(errorDiv);
+});
 });
 
-// Initialize when DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-// Initialize buy button
-const buyButton = document.getElementById("buyButton");
-if (buyButton) {
-buyButton.addEventListener("click", openOrderForm);
-}
-
-// Initialize close button
-const closeBtn = document.querySelector(".close-btn");
-if (closeBtn) {
-closeBtn.addEventListener("click", closeOrderForm);
-}
-
-// Initialize form submission
-const orderForm = document.getElementById("orderForm");
-if (orderForm) {
-orderForm.addEventListener("submit", sendOrder);
-}
-});
-
-// Function to open the order form
-function openOrderForm(event) {
+// Function to open the Telegram order form
+function openTelegramForm() {
 try {
-if (event) {
-event.preventDefault();
-event.stopPropagation();
-}
+const productTitle = document.getElementById("productTitle").textContent;
+const productPrice = document.getElementById("productPrice").textContent;
+const pageUrl = window.location.href;
 
-const productTitle =
-document.getElementById("productTitle").textContent;
-const productPrice =
-document.getElementById("productPrice").textContent;
-
-document.getElementById("productName").value = productTitle;
-document.getElementById("productPrice").value = productPrice;
+document.getElementById("tgProductName").value = productTitle;
+document.getElementById("tgProductPrice").value = productPrice;
+document.getElementById("tgPageUrl").value = pageUrl;
 
 // Show the form
-const form = document.getElementById("whatsappForm");
+const form = document.getElementById("telegramForm");
 if (form) {
 form.style.display = "flex";
-document.body.style.overflow = "hidden"; // Prevent scrolling when form is open
+document.body.style.overflow = "hidden";
 
-// Set focus to first input field
-const firstInput = form.querySelector("input, textarea, select");
-if (firstInput) firstInput.focus();
+// Clear previous status messages
+document.getElementById("telegramStatus").innerHTML = "";
+document.getElementById("telegramStatus").style.display = "none";
 
-// Scroll to form
+// Reset form
+document.getElementById("telegramOrderForm").reset();
+document.getElementById("tgQuantity").value = "1";
+
+// Focus on first input field
 setTimeout(() => {
-form.scrollIntoView({ behavior: "smooth", block: "center" });
-}, 50);
+const firstInput = document.getElementById("tgName");
+if (firstInput) firstInput.focus();
+}, 100);
 }
 } catch (error) {
-console.error("Error opening order form:", error);
+console.error("Error opening Telegram form:", error);
+showStatusMessage("error", "Unable to open form. Please try again.");
 }
 }
 
-// Function to close the order form
-function closeOrderForm() {
+// Function to close the Telegram order form
+function closeTelegramForm() {
 try {
-const whatsappForm = document.getElementById("whatsappForm");
-if (whatsappForm) {
-whatsappForm.style.display = "none";
+const telegramForm = document.getElementById("telegramForm");
+if (telegramForm) {
+telegramForm.style.display = "none";
 document.body.style.overflow = "auto";
 }
 } catch (error) {
-console.error("Error closing order form:", error);
+console.error("Error closing Telegram form:", error);
 }
 }
 
-// Function to send order via WhatsApp
-function sendOrder(event) {
+// Function to send order via Telegram
+async function sendTelegramOrder(event) {
 if (event) {
 event.preventDefault();
 }
 
 try {
-// Get form values
+// Collect form data
 const formData = {
-productName: document.getElementById("productName").value,
-productPrice: document.getElementById("productPrice").value,
-name: document.getElementById("name").value,
-phone: document.getElementById("phone").value,
-address: document.getElementById("address").value,
-quantity: document.getElementById("quantity").value,
-notes: document.getElementById("notes").value,
+productName: document.getElementById("tgProductName").value,
+productPrice: document.getElementById("tgProductPrice").value,
+name: document.getElementById("tgName").value.trim(),
+phone: document.getElementById("tgPhone").value.trim(),
+address: document.getElementById("tgAddress").value.trim(),
+quantity: document.getElementById("tgQuantity").value,
+notes: document.getElementById("tgNotes").value.trim(),
+pageUrl: document.getElementById("tgPageUrl").value,
+timestamp: new Date().toLocaleString('ar-EG', {
+timeZone: 'Africa/Cairo',
+hour12: true,
+year: 'numeric',
+month: 'long',
+day: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+})
 };
 
 // Validate required fields
-if (
-!formData.name ||
-!formData.phone ||
-!formData.address ||
-!formData.quantity
-) {
-console.error("Please fill in all required fields");
+if (!formData.name || !formData.phone || !formData.address || !formData.quantity) {
+showStatusMessage("error", "Please fill in all required fields");
 return false;
 }
 
-// Format the message
-let message = `*New Order*%0A%0A`;
-message += `*Product:* ${formData.productName}%0A`;
-message += `*Price:* ${formData.productPrice}%0A`;
-message += `*Quantity:* ${formData.quantity}%0A`;
-message += `*Name:* ${formData.name}%0A`;
-message += `*Phone:* ${formData.phone}%0A`;
-message += `*Address:* ${formData.address}%0A`;
-
-if (formData.notes) {
-message += `*Notes:* ${formData.notes}%0A`;
+// Validate phone number
+const phoneRegex = /^[0-9\s\-\+\(\)]{8,15}$/;
+if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+showStatusMessage("error", "Please enter a valid phone number");
+return false;
 }
 
-// Create WhatsApp URL
-const whatsappNumber = "2001551839053";
-const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+// Validate quantity
+if (formData.quantity < 1) {
+showStatusMessage("error", "Quantity must be at least 1");
+return false;
+}
 
-// Open WhatsApp in a new tab
-const link = document.createElement("a");
-link.href = whatsappUrl;
-link.target = "_blank";
-link.rel = "noopener noreferrer";
-document.body.appendChild(link);
-link.click();
+// Show loading status
+showStatusMessage("loading", "Sending your order...");
 
-// Clean up
+// Disable submit button
+const submitBtn = document.getElementById("telegramSubmitBtn");
+const originalText = submitBtn.innerHTML;
+submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+submitBtn.disabled = true;
+
+// Prepare API request to Vercel function
+const apiResponse = await fetch('/api/send-order', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify(formData)
+});
+
+const result = await apiResponse.json();
+
+// Check result
+if (apiResponse.ok && result.success) {
+// ✅ Success
+showStatusMessage("success", "✅ Order sent successfully! We will contact you within 24 hours.");
+
+// Reset form and close after 3 seconds
 setTimeout(() => {
-document.body.removeChild(link);
-}, 100);
+document.getElementById("telegramOrderForm").reset();
+document.getElementById("tgQuantity").value = "1";
+closeTelegramForm();
+}, 3000);
 
-// Reset and close form
-if (event && event.target) {
-event.target.reset();
+// Enable button
+submitBtn.innerHTML = originalText;
+submitBtn.disabled = false;
+
+// Track successful order (optional)
+if (typeof gtag !== 'undefined') {
+gtag('event', 'telegram_order_sent', {
+'event_category': 'engagement',
+'event_label': formData.productName
+});
 }
-closeOrderForm();
 
 return true;
+} else {
+// ❌ Server error
+const errorMsg = result.error || 'Server error. Please try again later.';
+showStatusMessage("error", `⚠️ ${errorMsg}`);
+
+// Enable button
+submitBtn.innerHTML = originalText;
+submitBtn.disabled = false;
+
+return false;
+}
+
 } catch (error) {
-console.error("Error sending order:", error);
+// ❌ Network error
+console.error("Error sending Telegram order:", error);
+showStatusMessage("error", "❌ Network error. Please check your internet connection and try again.");
+
+// Enable button
+const submitBtn = document.getElementById("telegramSubmitBtn");
+if (submitBtn) {
+submitBtn.innerHTML = '<i class="fab fa-telegram"></i> Send Order';
+submitBtn.disabled = false;
+}
+
 return false;
 }
 }
 
-// Close modal when clicking outside of it
+// Function to show status messages
+function showStatusMessage(type, message) {
+const statusDiv = document.getElementById("telegramStatus");
+if (!statusDiv) return;
+
+let html = '';
+let className = '';
+
+switch(type) {
+case "success":
+className = "success-message";
+html = `<i class="fas fa-check-circle"></i> ${message}`;
+break;
+case "error":
+className = "error-message";
+html = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+break;
+case "loading":
+className = "loading-message";
+html = `<div class="loading-spinner"></div> ${message}`;
+break;
+default:
+return;
+}
+
+statusDiv.className = className;
+statusDiv.innerHTML = html;
+statusDiv.style.display = "block";
+
+// Auto-hide success messages after 5 seconds
+if (type === "success") {
+setTimeout(() => {
+statusDiv.style.display = "none";
+}, 5000);
+}
+}
+
+// Close modal when clicking outside
 document.addEventListener("click", function (event) {
-const modal = document.getElementById("whatsappForm");
+const modal = document.getElementById("telegramForm");
 if (event.target === modal) {
-closeOrderForm();
+closeTelegramForm();
 }
 });
 
 // Close modal with Escape key
 document.addEventListener("keydown", function (event) {
 if (event.key === "Escape") {
-closeOrderForm();
+closeTelegramForm();
 }
+});
+
+// Form validation helpers
+document.getElementById("tgPhone").addEventListener("input", function(e) {
+this.value = this.value.replace(/[^0-9\s\-\+\(\)]/g, '');
+});
+
+document.getElementById("tgQuantity").addEventListener("input", function(e) {
+if (this.value < 1) this.value = 1;
 });
 </script>
 </body>
