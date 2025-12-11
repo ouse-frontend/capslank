@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #020000;
+        transition: all 0.3s ease;
+      }
+
+      /* RTL support for Arabic */
+      [lang="ar"] {
+        direction: rtl;
+        text-align: right;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .product-title {
+        font-size: 24px;
+        margin: 0 0 5px 0;
+        color: #0636f4;
+      }
+      .product-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .video-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .video-container video {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-price {
+        font-size: 20px;
+        color: #e91e63;
+        font-weight: bold;
+        margin: 5px 0 15px;
+      }
+
+      .product-description {
+        line-height: 1.6;
+        color: #555;
+      }
+
+      .product-details {
+        display: flex;
+        gap: 20px;
+        margin: 15px 0;
+        color: #666;
+      }
+
+      .buy-button {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #0088cc;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .buy-button:hover {
+        background-color: #006699;
+      }
+
+      /* Telegram Order Form Styles */
+      .telegram-form {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .form-container {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 420px;
+        position: relative;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+        transition: border 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #0088cc;
+        box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.1);
+      }
+
+      .form-group textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      .submit-btn {
+        background-color: #0088cc;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 10px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .submit-btn:hover {
+        background-color: #006699;
+      }
+
+      .submit-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      .close-btn {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 28px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: #666;
+        line-height: 1;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+
+      .close-btn:hover {
+        background-color: #f0f0f0;
+      }
+
+      /* Status Messages */
+      .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .loading-message {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #0088cc;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Security Warning */
+      .security-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-size: 12px;
+        text-align: center;
+        display: none; /* مخفي افتراضياً */
+      }
+
+      @media (min-width: 768px) {
+        .product-container {
+          flex-direction: row;
+        }
+
+        .video-container {
+          flex: 1;
+        }
+
+        .product-info {
+          flex: 1;
+          padding: 0 20px;
+        }
+      }
+
+      /* Mobile-specific styles */
+      @media (max-width: 767px) {
+        body {
+          padding: 10px;
+        }
+
+        .product-container {
+          gap: 15px;
+        }
+
+        .product-title {
+          font-size: 1.3rem;
+          line-height: 1.3;
+        }
+
+        .product-price {
+          font-size: 1.1rem;
+          margin: 8px 0;
+        }
+
+        .product-description,
+        .product-details {
+          font-size: 0.9rem;
+          line-height: 1.5;
+        }
+
+        .product-meta {
+          flex-direction: column;
+          gap: 5px;
+          font-size: 0.9rem;
+        }
+
+        .buy-button {
+          padding: 10px 20px;
+          font-size: 0.95rem;
+          width: 100%;
+          margin: 15px 0;
+        }
+
+        /* RTL adjustments for mobile */
+        [lang="ar"] .product-details,
+        [lang="ar"] .product-description {
+          text-align: right;
+        }
+
+        [lang="ar"] .product-meta {
+          text-align: right;
+        }
+
+        .form-container {
+          padding: 20px 15px;
+          margin: 10px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          padding: 8px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body lang="en" id="pageBody">
+    <!-- Security Warning (مخفي افتراضياً) -->
+    <div id="securityWarning" class="security-warning">
+      ⚠️ <strong>تحذير أمان:</strong> هذا الموقع في مرحلة تجريبية. التوكنات
+      ظاهرة في الكود. <br />❌
+      <strong>لا تشارك رابط الموقع مع أي شخص</strong> ❌
+    </div>
+
+    <div class="product-container">
+      <div class="video-container">
+        <div class="video-wrapper" style="position: relative; width: 100%">
+          <video
+            id="productVideo"
+            muted
+            preload="metadata"
+            playsinline
+            style="width: 100%"
+          >
+            <source src="" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <button
+            id="playButton"
+            style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: rgba(0, 0, 0, 0.5);
+              color: white;
+              border: none;
+              border-radius: 50%;
+              width: 20px;
+              height: 20px;
+              font-size: 24px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.3s ease;
+            "
+          >
+            <img style="width: 60px; height: fill-content ;opacity: 0.8;" src="playy.png" alt="">
+          </button>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h1 class="product-title" id="productTitle">Loading...</h1>
+        <div class="product-price" id="productPrice">$99.99</div>
+
+        <p class="product-description" id="productDescription">
+          Loading product description...
+        </p>
+
+        <a href="#" id="buyButton" class="buy-button">
+          <i class="fas fa-shopping-cart"></i> Buy Now
+        </a>
+
+        <div class="product-details">
+          <h3>Product Details</h3>
+          <ul id="productDetails">
+            <!-- Will be populated by JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telegram Order Form -->
+    <div id="telegramForm" class="telegram-form">
+      <div class="form-container">
+        <button class="close-btn" onclick="closeTelegramForm()">&times;</button>
+        <h2 style="margin: 0 0 20px 0; color: #0088cc; text-align: center">
+          <i class="fab fa-telegram"></i> Order Details
+        </h2>
+        <form id="telegramOrderForm">
+          <input type="hidden" id="tgProductName" />
+          <input type="hidden" id="tgProductPrice" />
+          <input type="hidden" id="tgPageUrl" />
+
+          <div class="form-group">
+            <label for="tgName">Your Name *</label>
+            <input
+              type="text"
+              id="tgName"
+              required
+              placeholder="Enter your full name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="tgPhone">Phone Number *</label>
+            <input type="tel" id="tgPhone" required placeholder="01012345678" />
+          </div>
+
+          <div class="form-group">
+            <label for="tgAddress">Delivery Address *</label>
+            <textarea
+              id="tgAddress"
+              required
+              placeholder="Street, City, District"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="tgQuantity">Quantity *</label>
+            <input type="number" id="tgQuantity" min="1" value="1" required />
+          </div>
+
+          <div class="form-group">
+            <label for="tgNotes">Additional Notes</label>
+            <textarea
+              id="tgNotes"
+              placeholder="Any special requests or notes"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" id="telegramSubmitBtn">
+            <i class="fab fa-telegram"></i> Send Order
+          </button>
+
+          <div id="telegramStatus" style="margin-top: 15px; display: none">
+            <!-- Status messages will appear here -->
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      // Function to redirect to checkout page with product details
+      function redirectToCheckout() {
+        try {
+          console.log('Redirecting to checkout...');
+          // Get the current product details
+          const urlParams = new URLSearchParams(window.location.search);
+          const productId = urlParams.get('id');
+          
+          console.log('Product ID from URL:', productId);
+          console.log('Available products:', window.products);
+          
+          if (!window.products || !Array.isArray(window.products)) {
+            throw new Error('Products array not found or invalid');
+          }
+          
+          const product = window.products.find(p => p.id === parseInt(productId));
+          
+          if (product) {
+            console.log('Found product:', product);
+            // Prepare product details to pass to checkout page
+            const productData = {
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              video: product.video,
+              description: product.description,
+              details: product.details ? product.details.join('|') : ''
+            };
+            
+            // Convert to base64 to handle special characters
+            const encodedData = btoa(JSON.stringify(productData));
+            console.log('Encoded data:', encodedData);
+            
+            // Redirect to checkout page with product data
+            window.location.href = `checkout.html?data=${encodedData}`;
+          } else {
+            console.error('Product not found with ID:', productId);
+            alert('Product not found. Please try again.');
+          }
+        } catch (error) {
+          console.error('Error in redirectToCheckout:', error);
+          alert('An error occurred. Please check the console for details.');
+        }
+      }
+
+      // ⚠️ ========== إعدادات Telegram (للتجربة فقط) ========== ⚠️
+      // 🚨 تحذير: التوكنات ظاهرة في الكود - هذا غير آمن للاستخدام الدائم
+      // 🚨 لا تشارك رابط الموقع مع أي شخص أثناء وجود التوكنات هنا
+      // 🚨 بعد التأكد من العمل، احذف هذه التوكنات واستخدم نظام API الآمن
+      const TELEGRAM_CONFIG = {
+        BOT_TOKEN: "8504476481:AAEEPI5g0ON7dPvHaAXV1W38shqPF8pnD2w",
+        CHAT_ID: "6891429238",
+        TEST_MODE: true, // ضع false عندما تنتهي من التجربة
+      };
+
+      // Function to detect Arabic text
+      function isArabic(text) {
+        const arabicRegex =
+          /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+        return arabicRegex.test(text);
+      }
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        try {
+          // Get the product ID from the URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const productId = parseInt(urlParams.get("id") || "1");
+
+          // Fetch products from the external JSON file
+          const response = await fetch("products.json");
+          if (!response.ok) {
+            throw new Error("Failed to load product data");
+          }
+          const data = await response.json();
+
+          // Find the product with the matching ID
+          const product = data.products.find((p) => p.id === productId) || {
+            title: "Product Not Found",
+            price: 0,
+            description: "The requested product could not be found.",
+            video: "grok-video-979d812e-8b18-40b5-b8c7-c4c0d4b043b7.mp4",
+            stats: {},
+            details: [],
+          };
+
+          // Update the page with product data
+          document.getElementById("productTitle").textContent = product.title;
+          document.getElementById(
+            "productPrice"
+          ).textContent = `$${product.price.toFixed(2)}`;
+          document.getElementById("productDescription").textContent =
+            product.description;
+
+          // Set RTL if product is in Arabic
+          if (isArabic(product.title) || isArabic(product.description)) {
+            document.getElementById("pageBody").setAttribute("lang", "ar");
+          }
+
+          // Update the video source and set up play button
+          const videoElement = document.getElementById("productVideo");
+          const playButton = document.getElementById("playButton");
+          videoElement.src = product.video;
+
+          // Toggle play/pause when clicking the video or button
+          function togglePlay() {
+            if (videoElement.paused) {
+              videoElement.play();
+              playButton.style.display = "none";
+            } else {
+              videoElement.pause();
+              playButton.style.display = "flex";
+            }
+          }
+
+          videoElement.addEventListener("click", togglePlay);
+          playButton.addEventListener("click", togglePlay);
+
+          // Show play button when video ends
+          videoElement.addEventListener("ended", () => {
+            playButton.style.display = "flex";
+          });
+
+          // Update the page title
+          document.title = `${product.title} - Product Details`;
+
+          // Update the meta description for better SEO
+          const metaDescription = document.querySelector(
+            'meta[name="description"]'
+          );
+          if (metaDescription) {
+            metaDescription.content = product.description;
+          }
+
+          // Update the product meta information
+          const productMeta = document.querySelector(".product-meta");
+          if (productMeta && product.stats) {
+            productMeta.innerHTML = `
+<div>⭐ ${product.stats.rating || "4.5"} (${
+              product.stats.reviews || "0"
+            } reviews)</div>
+<div>🛒 In Stock: ${product.stats.inStock || "0"}+</div>
+`;
+          }
+
+          // Add product details to the list
+          const detailsList = document.getElementById("productDetails");
+          if (detailsList) {
+            detailsList.innerHTML = product.details
+              .map((detail) => `<li>${detail}</li>`)
+              .join("");
+          }
+
+          // Handle buy button click with all product data
+          const buyButton = document.getElementById('buyButton');
+          if (buyButton && product) {
+            // Prepare product data
+            const productData = {
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              video: product.video,
+              description: product.description,
+              details: product.details ? product.details.join('|') : ''
+            };
+            
+            // Convert to base64 for URL
+            const encodedData = btoa(JSON.stringify(productData));
+            
+            // Set the href to include all product data
+            buyButton.href = `checkout.html?data=${encodeURIComponent(encodedData)}`;
+            
+            // Add click handler for logging
+            buyButton.addEventListener('click', function() {
+              console.log('Navigating to checkout with product data:', productData);
+            });
+          } else {
+            console.error('Product data not available');
+            if (buyButton) {
+              buyButton.style.display = 'none';
+              const errorMsg = document.createElement('div');
+              errorMsg.textContent = 'Product not available';
+              errorMsg.style.color = 'red';
+              buyButton.parentNode.insertBefore(errorMsg, buyButton.nextSibling);
+            }
+          }
+
+          const telegramOrderForm =
+            document.getElementById("telegramOrderForm");
+          if (telegramOrderForm) {
+            telegramOrderForm.addEventListener("submit", sendTelegramOrder);
+          }
+
+          // Set page URL in hidden field
+          document.getElementById("tgPageUrl").value = window.location.href;
+
+          // Test Telegram connection on load (اختياري)
+          testTelegramConnection();
+        } catch (error) {
+          console.error("Error loading product:", error);
+          const productInfo = document.querySelector(".product-info");
+          if (productInfo) {
+            productInfo.innerHTML = `
+<h1 class="product-title">Error Loading Product</h1>
+<p>Sorry, there was an error loading the product details. Please try again later.</p>
+<a href="ht.html" class="back-button">← Back to Products</a>
+`;
+          }
+        }
+
+        // Error handling for uncaught errors
+        window.addEventListener("error", function (error) {
+          console.error("Uncaught error:", error);
+        });
+      });
+
+      // Function to test Telegram connection
+      async function testTelegramConnection() {
+        if (!TELEGRAM_CONFIG.TEST_MODE) return;
+
+        try {
+          const testResponse = await fetch(
+            `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/getMe`
+          );
+          const testResult = await testResponse.json();
+          if (testResult.ok) {
+            console.log(
+              "✅ Telegram Bot is working:",
+              testResult.result.username
+            );
+            // إظهار تحذير الأمان عند تشغيل الموقع
+            document.getElementById("securityWarning").style.display = "block";
+          } else {
+            console.error("❌ Telegram Bot error:", testResult);
+          }
+        } catch (error) {
+          console.log("ℹ️ Telegram test skipped or failed");
+        }
+      }
+
+      // Function to open the Telegram order form (kept for backward compatibility)
+      function openTelegramForm() {
+        try {
+          // Redirect to checkout page instead of showing the form
+          redirectToCheckout();
+        } catch (error) {
+          console.error("Error in openTelegramForm:", error);
+          showStatusMessage("error", "Unable to process your request. Please try again.");
+        }
+      }
+
+      // Function to close the Telegram order form
+      function closeTelegramForm() {
+        try {
+          const telegramForm = document.getElementById("telegramForm");
+          if (telegramForm) {
+            telegramForm.style.display = "none";
+            document.body.style.overflow = "auto";
+          }
+        } catch (error) {
+          console.error("Error closing Telegram form:", error);
+        }
+      }
+
+      // Function to send order via Telegram
+      async function sendTelegramOrder(event) {
+        if (event) {
+          event.preventDefault();
+        }
+
+        // 🟢 التعديل الرئيسي: إرسال مباشر إلى Telegram API
+        try {
+          // Collect form data
+          const formData = {
+            productName: document.getElementById("tgProductName").value,
+            productPrice: document.getElementById("tgProductPrice").value,
+            name: document.getElementById("tgName").value.trim(),
+            phone: document.getElementById("tgPhone").value.trim(),
+            address: document.getElementById("tgAddress").value.trim(),
+            quantity: document.getElementById("tgQuantity").value,
+            notes: document.getElementById("tgNotes").value.trim(),
+            pageUrl: document.getElementById("tgPageUrl").value,
+            timestamp: new Date().toLocaleString("ar-EG", {
+              timeZone: "Africa/Cairo",
+              hour12: true,
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          };
+
+          // Validate required fields
+          if (
+            !formData.name ||
+            !formData.phone ||
+            !formData.address ||
+            !formData.quantity
+          ) {
+            showStatusMessage("error", "Please fill in all required fields");
+            return false;
+          }
+
+          // Validate phone number
+          const phoneRegex = /^[0-9\s\-\+\(\)]{8,15}$/;
+          if (!phoneRegex.test(formData.phone.replace(/\s/g, ""))) {
+            showStatusMessage("error", "Please enter a valid phone number");
+            return false;
+          }
+
+          // Validate quantity
+          if (formData.quantity < 1) {
+            showStatusMessage("error", "Quantity must be at least 1");
+            return false;
+          }
+
+          // Show loading status
+          showStatusMessage("loading", "Sending your order...");
+
+          // Disable submit button
+          const submitBtn = document.getElementById("telegramSubmitBtn");
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Sending...';
+          submitBtn.disabled = true;
+
+          // إنشاء نص الرسالة
+          const messageText = `
+🛒 *طلب جديد من Capslank!*
+
+📦 *المنتج:* ${formData.productName}
+💰 *السعر:* ${formData.productPrice}
+🔢 *الكمية:* ${formData.quantity}
+
+👤 *العميل:* ${formData.name}
+📞 *الهاتف:* \`${formData.phone}\`
+📍 *العنوان:* ${formData.address}
+
+${formData.notes ? `📝 *ملاحظات:*\n${formData.notes}\n` : ""}
+🌐 *رابط الصفحة:* ${formData.pageUrl}
+⏰ *التاريخ:* ${formData.timestamp}
+
+🆔 *معرف الطلب:* ${Date.now()}
+`.trim();
+
+          // إرسال مباشر إلى Telegram API
+          const telegramResponse = await fetch(
+            `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                text: messageText,
+                parse_mode: "Markdown",
+                disable_web_page_preview: true,
+              }),
+            }
+          );
+
+          const result = await telegramResponse.json();
+
+          if (result.ok) {
+            // ✅ النجاح
+            showStatusMessage(
+              "success",
+              "✅ تم إرسال طلبك بنجاح! سنتصل بك خلال 24 ساعة."
+            );
+
+            // إرسال رسالة تأكيد إضافية (اختياري)
+            setTimeout(async () => {
+              const confirmMessage = `✅ تأكيد: تم استلام طلب من ${formData.name}`;
+              await fetch(
+                `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                    text: confirmMessage,
+                    parse_mode: "Markdown",
+                  }),
+                }
+              );
+            }, 1000);
+
+            // Reset form and close after 3 seconds
+            setTimeout(() => {
+              document.getElementById("telegramOrderForm").reset();
+              document.getElementById("tgQuantity").value = "1";
+              closeTelegramForm();
+            }, 3000);
+
+            // Enable button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            return true;
+          } else {
+            // ❌ خطأ من Telegram API
+            const errorMsg =
+              result.description || "فشل الإرسال. حاول مرة أخرى.";
+            showStatusMessage("error", `⚠️ ${errorMsg}`);
+
+            // Enable button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            return false;
+          }
+        } catch (error) {
+          // ❌ خطأ في الشبكة
+          console.error("Error sending Telegram order:", error);
+          showStatusMessage(
+            "error",
+            "❌ خطأ في الشبكة. تحقق من اتصال الإنترنت."
+          );
+
+          // Enable button
+          const submitBtn = document.getElementById("telegramSubmitBtn");
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fab fa-telegram"></i> Send Order';
+            submitBtn.disabled = false;
+          }
+
+          return false;
+        }
+      }
+
+      // Function to show status messages
+      function showStatusMessage(type, message) {
+        const statusDiv = document.getElementById("telegramStatus");
+        if (!statusDiv) return;
+
+        let html = "";
+        let className = "";
+
+        switch (type) {
+          case "success":
+            className = "success-message";
+            html = `<i class="fas fa-check-circle"></i> ${message}`;
+            break;
+          case "error":
+            className = "error-message";
+            html = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            break;
+          case "loading":
+            className = "loading-message";
+            html = `<div class="loading-spinner"></div> ${message}`;
+            break;
+          default:
+            return;
+        }
+
+        statusDiv.className = className;
+        statusDiv.innerHTML = html;
+        statusDiv.style.display = "block";
+
+        // إخفاء رسالة النجاح بعد 5 ثواني
+        if (type === "success") {
+          setTimeout(() => {
+            statusDiv.style.display = "none";
+          }, 5000);
+        }
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("click", function (event) {
+        const modal = document.getElementById("telegramForm");
+        if (event.target === modal) {
+          closeTelegramForm();
+        }
+      });
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeTelegramForm();
+        }
+      });
+
+      // Form validation helpers
+      document
+        .getElementById("tgPhone")
+        .addEventListener("input", function (e) {
+          this.value = this.value.replace(/[^0-9\s\-\+\(\)]/g, "");
+        });
+
+      document
+        .getElementById("tgQuantity")
+        .addEventListener("input", function (e) {
+          if (this.value < 1) this.value = 1;
+        });
+
+      // اختبار سريع للبوت (يمكن حذفه لاحقاً)
+      function quickTest() {
+        const testUrl = `https://api.telegram.org/bot${
+          TELEGRAM_CONFIG.BOT_TOKEN
+        }/sendMessage?chat_id=${
+          TELEGRAM_CONFIG.CHAT_ID
+        }&text=🔧%20اختبار%20نظام%20Capslank%20(%20${new Date().toLocaleTimeString(
+          "ar-EG"
+        )}%20)`;
+        window.open(testUrl, "_blank");
+      }
+    </script>
+  </body>
+</html>

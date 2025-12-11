@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --success-color: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 40px auto;
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        h1 {
+            color: #111827;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 0.9375rem;
+            margin-bottom: 0;
+        }
+
+        .form-container {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.9375rem;
+            color: var(--text-color);
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            appearance: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+        .status-message {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+
+        .success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .loading {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .product-info {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-info h2 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 0 0 8px 0;
+            color: #111827;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header {
+                padding: 20px 16px;
+            }
+            
+            .form-container {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Complete Your Order</h1>
+            <p class="subtitle">Fill in your details below</p>
+        </div>
+        
+        <div class="form-container">
+            <div id="statusMessage" class="status-message"></div>
+            
+            <form id="telegramForm" onsubmit="event.preventDefault(); sendTelegramOrder(event);">
+            <input type="hidden" id="productId" name="productId">
+            <input type="hidden" id="productName" name="productName">
+            <input type="hidden" id="productPrice" name="productPrice">
+            
+            <!-- Product Info Section -->
+            <div class="product-info">
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <h2 id="checkoutProductTitle" style="margin: 0 0 10px 0; color: #111827;">Product</h2>
+                        <div class="price" id="checkoutProductPrice" style="font-size: 1.25rem; font-weight: 600; color: #2563eb; margin-bottom: 12px;">$0.00</div>
+                        <p id="productDescription" style="color: #4b5563; margin-bottom: 12px; display: none;"></p>
+                        <ul id="productDetails" style="color: #4b5563; padding-left: 20px; margin: 0; display: none;"></ul>
+                    </div>
+                    <div style="width: 200px; border-radius: 8px; overflow: hidden;">
+                        <video id="productVideo" style="width: 100%; height: auto; display: none; border-radius: 8px;"></video>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="name" name="name" placeholder="Full Name *" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="tel" id="phone" name="phone" placeholder="Phone Number (with country code) *" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email (optional)">
+            </div>
+            
+            <div class="form-group">
+                <textarea id="address" name="address" rows="3" placeholder="Shipping Address *" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <input type="number" id="quantity" name="quantity" min="1" value="1" placeholder="Quantity *" required>
+            </div>
+            
+            <div class="form-group">
+                <textarea id="notes" name="notes" rows="2" placeholder="Order Notes (optional)"></textarea>
+            </div>
+            
+                <button type="submit" id="submitButton">
+                    <span id="buttonText">Complete Order</span>
+                    <span id="spinner" style="display: none;">Processing...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get product details from URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Get product data from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const productDataEncoded = urlParams.get('data');
+                
+                if (!productDataEncoded) {
+                    showStatusMessage('error', 'No product data found. Please select a product first.');
+                    return;
+                }
+                
+                // Decode the base64 product data
+                const productData = JSON.parse(atob(productDataEncoded));
+                const productId = productData.id || '';
+                const productName = productData.title || '';
+                const productPrice = productData.price || 0;
+                const productVideo = productData.video || '';
+                const productDescription = productData.description || '';
+                const productDetails = productData.details ? productData.details.split('|') : [];
+                
+                // Set values in hidden fields
+                document.getElementById('productId').value = productId;
+                document.getElementById('productName').value = productName;
+                document.getElementById('productPrice').value = productPrice;
+                
+                // Update the page title with the product name
+                if (productName) {
+                    document.title = `Checkout - ${productName}`;
+                    
+                    // Update the product info display
+                    const productTitle = document.getElementById('checkoutProductTitle');
+                    const productPriceDisplay = document.getElementById('checkoutProductPrice');
+                    const productDescriptionEl = document.getElementById('productDescription');
+                    const productDetailsEl = document.getElementById('productDetails');
+                    const productVideoEl = document.getElementById('productVideo');
+                    
+                    if (productTitle) productTitle.textContent = productName;
+                    if (productPriceDisplay) {
+                        productPriceDisplay.textContent = `$${parseFloat(productPrice).toFixed(2)}`;
+                    }
+                    
+                    // Add product description if available
+                    if (productDescriptionEl && productDescription) {
+                        productDescriptionEl.textContent = productDescription;
+                        productDescriptionEl.style.display = 'block';
+                    }
+                    
+                    // Add product details if available
+                    if (productDetailsEl && productDetails.length > 0) {
+                        productDetailsEl.innerHTML = productDetails.map(detail => 
+                            `<li>${detail}</li>`
+                        ).join('');
+                        productDetailsEl.style.display = 'block';
+                    }
+                    
+                    // Add video if available
+                    if (productVideoEl && productVideo) {
+                        productVideoEl.src = productVideo;
+                        productVideoEl.style.display = 'block';
+                        productVideoEl.preload = 'metadata';
+                        productVideoEl.controls = true;
+                        productVideoEl.muted = true;
+                        productVideoEl.playsInline = true;
+                    }
+                }
+                
+                const nameInput = document.getElementById('name');
+                if (nameInput) nameInput.focus();
+                
+            } catch (error) {
+                console.error('Error initializing checkout page:', error);
+                showStatusMessage('error', 'Error loading product information. Please go back and try again.');
+            }
+        });
+
+        // Function to show status messages
+        function showStatusMessage(type, message) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Function to send order via Telegram
+        async function sendTelegramOrder(event) {
+            event.preventDefault();
+            
+            const submitButton = document.getElementById('submitButton');
+            const buttonText = document.getElementById('buttonText');
+            const spinner = document.getElementById('spinner');
+            
+            // Validate required fields
+            const requiredFields = ['name', 'phone', 'address'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#dc3545';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) {
+                showStatusMessage('error', 'Please fill in all required fields.');
+                return;
+            }
+            
+            // Show loading state
+            submitButton.disabled = true;
+            buttonText.style.display = 'none';
+            spinner.style.display = 'inline';
+            
+            try {
+                // Get form data
+                const formData = new FormData(document.getElementById('telegramForm'));
+                const data = Object.fromEntries(formData.entries());
+                
+                // Get Telegram configuration
+                const botToken = '8504476481:AAEEPI5g0ON7dPvHaAXV1W38shqPF8pnD2w';
+                const chatId = '6891429238';
+                
+                // Calculate total price
+                const quantity = parseInt(data.quantity) || 1;
+                const price = parseFloat(data.productPrice) || 0;
+                const total = (price * quantity).toFixed(2);
+                
+                // Format the message with better structure
+                const message = `🛍 *New Order Received!*\n\n` +
+                    `*Product Details:*\n` +
+                    `• *Name:* ${data.productName || 'N/A'}\n` +
+                    `• *Price:* $${price.toFixed(2)}\n` +
+                    `• *Quantity:* ${quantity}\n` +
+                    `• *Total:* *$${total}*\n\n` +
+                    `*Customer Information:*\n` +
+                    `• *Name:* ${data.name || 'Not provided'}\n` +
+                    `• *Phone:* ${data.phone || 'Not provided'}\n` +
+                    (data.email ? `• *Email:* ${data.email}\n` : '') +
+                    `• *Address:* ${data.address || 'Not provided'}\n` +
+                    (data.notes ? `\n*Customer Notes:*\n${data.notes}` : '');
+                
+                // Send to Telegram
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showStatusMessage('success', '✅ Order placed successfully! We will contact you soon.');
+                    // Clear form but keep product info
+                    const form = document.getElementById('telegramForm');
+                    form.reset();
+                    // Restore product info in hidden fields
+                    const urlParams = new URLSearchParams(window.location.search);
+                    document.getElementById('productId').value = urlParams.get('id') || '';
+                    document.getElementById('productName').value = decodeURIComponent(urlParams.get('name') || '');
+                    document.getElementById('productPrice').value = urlParams.get('price') || '';
+                    
+                    // Scroll to top to show success message
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error(result.description || 'Failed to send message to Telegram');
+                }
+            } catch (error) {
+                console.error('Error sending order:', error);
+                showStatusMessage('error', `Error: ${error.message}. Please try again or contact support.`);
+            } finally {
+                // Reset button state
+                submitButton.disabled = false;
+                buttonText.style.display = 'inline';
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
