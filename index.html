@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="c.png">
+    <link rel="icon" type="image/x-icon" href="/icons/cc.png">
     <title>Capslank</title>
     <style>
       /* Full-width Image Banner with Multiple Photos */
@@ -337,26 +337,6 @@
         object-fit: cover;
         display: block;
       }
-/* 
-      h1 {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        color: white;
-        margin: 0;
-        font-size: 14px;
-        font-weight: 500;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-        z-index: 2;
-        text-align: left;
-        padding: 5px 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 4px;
-        max-width: calc(100% - 40px);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      } */
 
       @media (max-width: 767px) {
         .grid-container {
@@ -539,14 +519,14 @@
         </button>
         <div class="banner-slideshow" id="bannerSlideshow">
           <div class="banner-slide">
-            <img src="Samsung ATIV Book 9 Plus Review.jpeg" alt="Product 1" loading="lazy">
+            <img src="/images/(1) Instagram.jpeg" alt="Product 1" loading="lazy">
           </div>
           <!-- Add more slides as needed -->
           <div class="banner-slide">
-            <img src="Instagram.jpeg" alt="Product 2" loading="lazy">
+            <img src="/images/Instagram.jpeg" alt="Product 2" loading="lazy">
           </div>
           <div class="banner-slide">
-            <img src="(1) Instagram.jpeg" alt="Product 3" loading="lazy">
+            <img src="/images/(1) Instagram.jpeg" alt="Product 3" loading="lazy">
           </div>
         </div>
       </div>
@@ -605,11 +585,11 @@
           : product.stats.views;
 
       videoItem.innerHTML = `
-                            <a href="product-detail.html?id=${
+                            <a href="products.html?id=${
                               product.id
                             }" class="video-link">
                                 <div class="video-wrapper">
-                                    <video loop muted preload="metadata" playsinline>
+                                    <video loop muted preload="none" playsinline loading="lazy">
                                         <source src="${
                                           product.video
                                         }" type="video/mp4">
