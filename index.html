@@ -589,7 +589,7 @@
                               product.id
                             }" class="video-link">
                                 <div class="video-wrapper">
-                                    <video loop muted preload="none" playsinline>
+                                    <video muted preload="metadata" playsinline>
                                         <source src="${
                                           product.video
                                         }" type="video/mp4">
@@ -753,71 +753,71 @@
         loadProducts();
 
         // Video autoplay on scroll for mobile - one at a time
-        let currentPlayingVideo = null;
+        // let currentPlayingVideo = null;
         
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+       // function isInViewport(element) {
+           // const rect = element.getBoundingClientRect();
+          //  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
             // Consider a video in viewport if it's at least 50% visible
-            return (
-                rect.top >= -rect.height * 0.5 &&
-                rect.bottom <= viewportHeight + rect.height * 0.5
-            );
-        }
+           // return (
+              //  rect.top >= -rect.height * 0.5 &&
+              //  rect.bottom <= viewportHeight + rect.height * 0.5
+         //   );
+      //  }
 
-        function handleVideoPlayback() {
-            if (window.innerWidth < 320 || window.innerWidth > 470) return;
+      //  function handleVideoPlayback() {
+           // if (window.innerWidth < 320 || window.innerWidth > 470) return;
             
-            const videos = Array.from(document.querySelectorAll('.video-item video'));
-            const visibleVideos = videos.filter(video => isInViewport(video));
+         //   const videos = Array.from(document.querySelectorAll('.video-item video'));
+        //    const visibleVideos = videos.filter(video => isInViewport(video));
             
             // If no videos are visible, pause the current one
-            if (visibleVideos.length === 0) {
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
-                    currentPlayingVideo = null;
-                }
+         //   if (visibleVideos.length === 0) {
+              //  if (currentPlayingVideo) {
+             //       currentPlayingVideo.pause();
+            //        currentPlayingVideo = null;
+           //     }
                 return;
-            }
+         //   }
             
             // Find the most centered video
-            const viewportCenter = window.innerHeight / 2;
-            const closestVideo = visibleVideos.reduce((closest, video) => {
-                const rect = video.getBoundingClientRect();
-                const videoCenter = rect.top + rect.height / 2;
-                const distance = Math.abs(viewportCenter - videoCenter);
-                return distance < closest.distance ? {video, distance} : closest;
-            }, {video: null, distance: Infinity}).video;
+      //      const viewportCenter = window.innerHeight / 2;
+           // const closestVideo = visibleVideos.reduce((closest, video) => {
+          //      const rect = video.getBoundingClientRect();
+          //      const videoCenter = rect.top + rect.height / 2;
+               // const distance = Math.abs(viewportCenter - videoCenter);
+           //     return distance < closest.distance ? {video, distance} : closest;
+         //   }, {video: null, distance: Infinity}).video;
             
             // If we have a new video to play
-            if (closestVideo && currentPlayingVideo !== closestVideo) {
+          //  if (closestVideo && currentPlayingVideo !== closestVideo) {
                 // Pause current video if it exists
-                if (currentPlayingVideo) {
-                    currentPlayingVideo.pause();
+             //   if (currentPlayingVideo) {
+           //         currentPlayingVideo.pause();
                 }
                 // Play the new video
-                closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
-                currentPlayingVideo = closestVideo;
-            }
-        }
+             //   closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
+          //      currentPlayingVideo = closestVideo;
+       //     }
+     //   }
 
         // Throttle scroll events for better performance
-        let isScrolling = false;
-        function throttleScroll() {
-            if (!isScrolling) {
-                window.requestAnimationFrame(() => {
-                    handleVideoPlayback();
-                    isScrolling = false;
-                });
-                isScrolling = true;
-            }
-        }
+      //  let isScrolling = false;
+     //   function throttleScroll() {
+    //        if (!isScrolling) {
+            //    window.requestAnimationFrame(() => {
+                 //   handleVideoPlayback();
+            //        isScrolling = false;
+             //   });
+          //      isScrolling = true;
+     //       }
+   //     }
 
         // Add event listeners
-        window.addEventListener('scroll', throttleScroll);
-        window.addEventListener('resize', throttleScroll);
-        document.addEventListener('DOMContentLoaded', handleVideoPlayback);
-      });
+      //  window.addEventListener('scroll', throttleScroll);
+     //   window.addEventListener('resize', throttleScroll);
+   //     document.addEventListener('DOMContentLoaded', handleVideoPlayback);
+    
     </script>
     <!-- Footer -->
     <footer style="width: 100%; max-width: 1800px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 30px 15px; margin: 40px auto 0; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
