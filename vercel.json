@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/send-order.js": {
-      "maxDuration": 10
-    }
-  }
-}
