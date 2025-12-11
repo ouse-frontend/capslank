@@ -533,6 +533,7 @@
 
       <div class="grid-container">
         <!-- Video items will be generated here -->
+      </div>
     </div>
 
     <script>
@@ -563,93 +564,93 @@
 
       // Main content script
       document.addEventListener("DOMContentLoaded", async function () {
-  const gridContainer = document.querySelector(".grid-container");
+        const gridContainer = document.querySelector(".grid-container");
 
-  try {
-    // Fetch products from the external JSON file
-    const response = await fetch("products.json");
-    if (!response.ok) {
-      throw new Error("Failed to load products");
-    }
-    const data = await response.json();
-    const products = data.products;
+        try {
+          // Fetch products from the external JSON file
+          const response = await fetch("products.json");
+          if (!response.ok) {
+            throw new Error("Failed to load products");
+          }
+          const data = await response.json();
+          const products = data.products;
 
-    // Create video items for each product
-    products.forEach((product) => {
-      const videoItem = document.createElement("div");
-      videoItem.className = "video-item";
+          // Create video items for each product
+          products.forEach((product) => {
+            const videoItem = document.createElement("div");
+            videoItem.className = "video-item";
 
-      const views =
-        product.stats.views >= 1000
-          ? `${(product.stats.views / 1000).toFixed(1)}K`
-          : product.stats.views;
+            const views =
+              product.stats.views >= 1000
+                ? `${(product.stats.views / 1000).toFixed(1)}K`
+                : product.stats.views;
 
-      videoItem.innerHTML = `
-                            <a href="product-detail.html?id=${
-                              product.id
-                            }" class="video-link">
-                                <div class="video-wrapper">
-                                    <video muted preload="metadata" playsinline>
-                                        <source src="${
-                                          product.video
-                                        }" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <div class="video-overlay">
-                                        <h3>${product.title}</h3>
-                                        <p>${product.price.toFixed(2)}جنية</p>
+            videoItem.innerHTML = `
+                                <a href="product-detail.html?id=${
+                                  product.id
+                                }" class="video-link">
+                                    <div class="video-wrapper">
+                                        <video muted preload="metadata" playsinline>
+                                            <source src="${
+                                              product.video
+                                            }" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <div class="video-overlay">
+                                            <h3>${product.title}</h3>
+                                            <p>${product.price.toFixed(2)}جنية</p>
 
-                                        <!-- <div class="video-stats">
-                                             <span>👁️ ${views}</span>
-                                             <span>👍 ${
-                                               product.stats.likes
-                                             }%</span>
-                                             <span>💬 ${
-                                               product.stats.comments
-                                             }</span> 
-                                        </div> -->
-
-
+                                            <!-- <div class="video-stats">
+                                                 <span>👁️ ${views}</span>
+                                                 <span>👍 ${
+                                                   product.stats.likes
+                                                 }%</span>
+                                                 <span>💬 ${
+                                                   product.stats.comments
+                                                 }</span> 
+                                            </div> -->
 
 
+
+
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        `;
-      gridContainer.appendChild(videoItem);
-    });
+                                </a>
+                            `;
+            gridContainer.appendChild(videoItem);
+          });
 
-    // Handle hover play/pause for videos
-    const videoItems = document.querySelectorAll(".video-item");
+          // Handle hover play/pause for videos
+          const videoItems = document.querySelectorAll(".video-item");
 
-    videoItems.forEach((item) => {
-      const video = item.querySelector("video");
+          videoItems.forEach((item) => {
+            const video = item.querySelector("video");
 
-      // Mute and set volume to 0 to ensure no sound plays
-      video.muted = true;
-      video.volume = 0;
-      
+            // Mute and set volume to 0 to ensure no sound plays
+            video.muted = true;
+            video.volume = 0;
+            
 
-      // Pause video initially
-      video.pause();
+            // Pause video initially
+            video.pause();
 
-      // Play on hover
-      item.addEventListener("mouseenter", () => {
-        video.play().catch((e) => console.log("Video play failed:", e));
+            // Play on hover
+            item.addEventListener("mouseenter", () => {
+              video.play().catch((e) => console.log("Video play failed:", e));
+            });
+
+            // Pause when not hovering
+            item.addEventListener("mouseleave", () => {
+              video.pause();
+              video.currentTime = 0; // Reset to start
+            });
+          });
+        } catch (error) {
+          console.error("Error loading products:", error);
+          gridContainer.innerHTML =
+            "<p>Error loading products. Please try again later.</p>";
+        }
       });
-
-      // Pause when not hovering
-      item.addEventListener("mouseleave", () => {
-        video.pause();
-        video.currentTime = 0; // Reset to start
-      });
-    });
-  } catch (error) {
-    console.error("Error loading products:", error);
-    gridContainer.innerHTML =
-      "<p>Error loading products. Please try again later.</p>";
-  }
-});
 
       // Toggle search functionality
       document.addEventListener("DOMContentLoaded", function () {
@@ -751,73 +752,7 @@
 
         // Load products and initialize search
         loadProducts();
-
-        // Video autoplay on scroll for mobile - one at a time
-        // let currentPlayingVideo = null;
-        
-       // function isInViewport(element) {
-           // const rect = element.getBoundingClientRect();
-          //  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            // Consider a video in viewport if it's at least 50% visible
-           // return (
-              //  rect.top >= -rect.height * 0.5 &&
-              //  rect.bottom <= viewportHeight + rect.height * 0.5
-         //   );
-      //  }
-
-      //  function handleVideoPlayback() {
-           // if (window.innerWidth < 320 || window.innerWidth > 470) return;
-            
-         //   const videos = Array.from(document.querySelectorAll('.video-item video'));
-        //    const visibleVideos = videos.filter(video => isInViewport(video));
-            
-            // If no videos are visible, pause the current one
-         //   if (visibleVideos.length === 0) {
-              //  if (currentPlayingVideo) {
-             //       currentPlayingVideo.pause();
-            //        currentPlayingVideo = null;
-           //     }
-             //   return;
-         //   }
-            
-            // Find the most centered video
-      //      const viewportCenter = window.innerHeight / 2;
-           // const closestVideo = visibleVideos.reduce((closest, video) => {
-          //      const rect = video.getBoundingClientRect();
-          //      const videoCenter = rect.top + rect.height / 2;
-               // const distance = Math.abs(viewportCenter - videoCenter);
-           //     return distance < closest.distance ? {video, distance} : closest;
-         //   }, {video: null, distance: Infinity}).video;
-            
-            // If we have a new video to play
-          //  if (closestVideo && currentPlayingVideo !== closestVideo) {
-                // Pause current video if it exists
-             //   if (currentPlayingVideo) {
-           //         currentPlayingVideo.pause();
-                
-                // Play the new video
-             //   closestVideo.play().catch(e => console.log('Autoplay prevented:', e));
-          //      currentPlayingVideo = closestVideo;
-       //     }
-     //   }
-
-        // Throttle scroll events for better performance
-      //  let isScrolling = false;
-     //   function throttleScroll() {
-    //        if (!isScrolling) {
-            //    window.requestAnimationFrame(() => {
-                 //   handleVideoPlayback();
-            //        isScrolling = false;
-             //   });
-          //      isScrolling = true;
-     //       }
-   //     }
-
-        // Add event listeners
-      //  window.addEventListener('scroll', throttleScroll);
-     //   window.addEventListener('resize', throttleScroll);
-   //     document.addEventListener('DOMContentLoaded', handleVideoPlayback);
-    
+      });
     </script>
     <!-- Footer -->
     <footer style="width: 100%; max-width: 1800px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 30px 15px; margin: 40px auto 0; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
@@ -894,140 +829,7 @@
 
       <!-- Add Font Awesome for icons -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-      <style>
-        .footer-section h4::after {
-          content: '';
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          width: 40px;
-          height: 2px;
-          background: #2f61e0;
-        }
-        .footer-section a:hover {
-          color: #2f61e0 !important;
-          transform: translateX(5px) !important;
-          background: rgba(47, 97, 224, 0.1) !important;
-        }
-        .footer-section a, .footer-section li {
-          transition: all 0.3s ease;
-        }
-        button[type="submit"]:hover {
-          background: #1a4bb3 !important;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        input[type="email"]:focus {
-          border-color: #2f61e0 !important;
-          box-shadow: 0 0 0 2px rgba(47, 97, 224, 0.2);
-        }
-        @media (max-width: 768px) {
-          .footer-section {
-            text-align: center;
-          }
-          .footer-section h4::after {
-            left: 50%;
-            transform: translateX(-50%);
-          }
-          footer h1 {
-            font-size: 40vw !important;
-            opacity: 0.3 !important;
-            letter-spacing: 3px !important;
-          }
-        }
-      </style>
     </footer>
-    <style>
-      @media (min-width: 370px) and (max-width: 470px) {
-        footer {
-          padding: 20px 12px !important;
-        }
-        footer h1 {
-          font-size: 80vw !important;
-          letter-spacing: 1px !important;
-          color: rgba(255, 255, 255, 0.3) !important;
-          text-shadow: 2px 2px 4px blue !important;
-          transform: translate(-50%, -50%) rotate(90deg) !important;
-        }
-        .footer-section {
-          text-align: center;
-        }
-        .footer-section h3 {
-          font-size: 1.2rem !important;
-          margin-bottom: 12px !important;
-        }
-        .footer-section h4 {
-          font-size: 1.1rem !important;
-          margin-bottom: 12px !important;
-        }
-        .footer-section p {
-          font-size: 0.85rem !important;
-          line-height: 1.4 !important;
-          margin-bottom: 15px !important;
-        }
-        .footer-section form {
-          flex-direction: column;
-          gap: 8px !important;
-        }
-        .footer-section form input[type="email"] {
-          width: 100% !important;
-          margin-bottom: 8px;
-          font-size: 0.9rem !important;
-          padding: 6px 10px !important;
-        }
-      }
-      @media (min-width: 320px) and (max-width: 369px) {
-        footer {
-          padding: 16px 8px !important;
-          margin-top: 16px !important;
-        }
-        footer h1 {
-          font-size: 60vw !important;
-          letter-spacing: 0.5px !important;
-          opacity: 0.2 !important;
-           color: #1136bd4d !important;
-          text-shadow: 2px 2px 4px #2e2e88 !important;
-          transform: translate(-50%, -50%) rotate(90deg) !important;
-        }
-        .footer-section {
-          text-align: center;
-          padding: 0 4px;
-        }
-        .footer-section h3 {
-          font-size: 1.1rem !important;
-          margin-bottom: 10px !important;
-        }
-        .footer-section h4 {
-          font-size: 1rem !important;
-          margin-bottom: 10px !important;
-        }
-        .footer-section p {
-          font-size: 0.8rem !important;
-          line-height: 1.4 !important;
-          margin-bottom: 12px !important;
-        }
-        .footer-section form {
-          flex-direction: column;
-          gap: 8px !important;
-        }
-        .footer-section form input[type="email"],
-        .footer-section form button {
-          width: 100% !important;
-          padding: 6px 10px !important;
-          font-size: 0.85rem !important;
-        }
-        .footer-section form button {
-          margin: 0 !important;
-          padding: 8px !important;
-        }
-      }
-      @media (min-width: 471px) {
-        footer > div {
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-          gap: 30px !important;
-        }
-      }
-    </style>
   </body>
 </html>
+
